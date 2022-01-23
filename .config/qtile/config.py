@@ -56,18 +56,21 @@ keys = [
     Key([mod], "k", lazy.layout.up(),    desc="Move focus up"),
 
     # Move
-    Key([mod, "shift"], "h", lazy.layout.shuffle_left(),  desc="Move window to the left"),
-    Key([mod, "shift"], "l", lazy.layout.shuffle_right(), desc="Move window to the right"),
-    Key([mod, "shift"], "j", lazy.layout.shuffle_down(),  desc="Move window down"),
-    Key([mod, "shift"], "k", lazy.layout.shuffle_up(),    desc="Move window up"),
+    Key([mod, "shift"],   "h", lazy.layout.shuffle_left(),  lazy.layout.move_left(),  desc="Move window to the left"),
+    Key([mod, "shift"],   "l", lazy.layout.shuffle_right(), lazy.layout.move_right(), desc="Move window to the right"),
+    Key([mod, "shift"],   "j", lazy.layout.shuffle_down(),  lazy.layout.move_down(),  desc="Move window down"),
+    Key([mod, "shift"],   "k", lazy.layout.shuffle_up(),    lazy.layout.move_up(),    desc="Move window up"),
+    Key([mod, "control"], "k", lazy.layout.section_up(),                              desc="Move window up a section"),
+    Key([mod, "control"], "j", lazy.layout.section_down(),                            desc="Move window down a section"),
 
     Key([mod], "s", lazy.layout.toggle_split(), desc="Toggle layout split"),
 
     # Kill
     Key([mod, "shift"], "q", lazy.window.kill(), desc="Kill focused window"),
 
-    # Full screen
-    Key([mod], "f", lazy.window.toggle_fullscreen(), desc="Toggle full screen"),
+    # Full screen and floating
+    Key([mod],          "f", lazy.window.toggle_fullscreen(), desc="Toggle full screen"),
+    Key([mod, "shift"], "f", lazy.window.toggle_floating(),   desc="Toggle full screen"),
 
     # Resize
     KeyChord([mod], "r", [
@@ -246,7 +249,7 @@ media_matches = [
 groups = [
     Group("1: Main "),
     Group("2: Code "),
-    Group("3: Web ", layouts=[layout.TreeTab()]),
+    Group("3: Web ", layouts=[layout.TreeTab(active_bg=bg_color, active_fg=green, bg_color=bg_color, inactive_bg=bg_color, sections=["General", "Code"], urgent_fg=red, urgent_bg=bg_color, panel_width=150, level_shift=20)]),
     Group("4: Chats ", layouts=[layout.Tile(margin=margin, border_focus=blue)], matches=chat_matches),
     Group("5: Office "),
     Group("6: Download "),
