@@ -1,125 +1,273 @@
-# Copyright (c) 2010 Aldo Cortesi
-# Copyright (c) 2010, 2014 dequis
-# Copyright (c) 2012 Randall Ma
-# Copyright (c) 2012-2014 Tycho Andersen
-# Copyright (c) 2012 Craig Barnes
-# Copyright (c) 2013 horsik
-# Copyright (c) 2013 Tao Sauvage
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-
+#  ================================== Imports ============================== {{{
 from typing import List  # noqa: F401
 
-from libqtile import bar, layout, widget
-from libqtile.config import Click, Drag, Group, Key, Match, Screen
+from libqtile import bar, layout, widget, hook
+from libqtile.config import Click, Drag, Group, Key, Match, Screen, KeyChord
 from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
 
-mod = "mod4"
-terminal = guess_terminal()
+import subprocess
+import os
+# }}}
+# =============================== Qtile Settings =========================== {{{
+auto_fullscreen            = True
+focus_on_window_activation = "smart"
+reconfigure_screens        = True
+auto_minimize              = True
+dgroups_key_binder         = None
+dgroups_app_rules          = []
+follow_mouse_focus         = True
+bring_front_click          = False
+cursor_warp                = False
+wmname                     = "LG3D"
+# }}}
+# =================================== Globals ============================== {{{
+mod                  = "mod4"
+terminal             = guess_terminal()
+border_width         = 1
+margin               = 10
+config_dir           = os.path.expanduser("~/.config/qtile")
 
+# ----------------------------------- Colors ------------------------------ {{{{
+bg_color             = "#32302f"
+bg_color_transparent = "#ef2f343f"
+inactive_bg_color    = "#32302f"
+text_color           = "#ebdbb2"
+inactive_text_color  = "#929378"
+urgent_bg_color      = "#cc241d"
+
+black                = "#282828"
+red                  = "#cc241d"
+green                = "#98971a"
+yellow               = "#d79921"
+blue                 = "#458588"
+magenta              = "#b16286"
+cyan                 = "#689d6a"
+white                = "#a89984"
+# }}}}
+# }}}
+# ================================ Key Bindings ============================ {{{
 keys = [
-    # A list of available commands that can be bound to keys can be found
-    # at https://docs.qtile.org/en/latest/manual/config/lazy.html
-
-    # Switch between windows
-    Key([mod], "h", lazy.layout.left(), desc="Move focus to left"),
+    # ---------------------------- Window management ---------------------- {{{{
+    # Focus
+    Key([mod], "h", lazy.layout.left(),  desc="Move focus to left"),
     Key([mod], "l", lazy.layout.right(), desc="Move focus to right"),
-    Key([mod], "j", lazy.layout.down(), desc="Move focus down"),
-    Key([mod], "k", lazy.layout.up(), desc="Move focus up"),
-    Key([mod], "space", lazy.layout.next(),
-        desc="Move window focus to other window"),
+    Key([mod], "j", lazy.layout.down(),  desc="Move focus down"),
+    Key([mod], "k", lazy.layout.up(),    desc="Move focus up"),
 
-    # Move windows between left/right columns or move up/down in current stack.
-    # Moving out of range in Columns layout will create new column.
-    Key([mod, "shift"], "h", lazy.layout.shuffle_left(),
-        desc="Move window to the left"),
-    Key([mod, "shift"], "l", lazy.layout.shuffle_right(),
-        desc="Move window to the right"),
-    Key([mod, "shift"], "j", lazy.layout.shuffle_down(),
-        desc="Move window down"),
-    Key([mod, "shift"], "k", lazy.layout.shuffle_up(), desc="Move window up"),
+    # Move
+    Key([mod, "shift"], "h", lazy.layout.shuffle_left(),  desc="Move window to the left"),
+    Key([mod, "shift"], "l", lazy.layout.shuffle_right(), desc="Move window to the right"),
+    Key([mod, "shift"], "j", lazy.layout.shuffle_down(),  desc="Move window down"),
+    Key([mod, "shift"], "k", lazy.layout.shuffle_up(),    desc="Move window up"),
 
-    # Grow windows. If current window is on the edge of screen and direction
-    # will be to screen edge - window would shrink.
-    Key([mod, "control"], "h", lazy.layout.grow_left(),
-        desc="Grow window to the left"),
-    Key([mod, "control"], "l", lazy.layout.grow_right(),
-        desc="Grow window to the right"),
-    Key([mod, "control"], "j", lazy.layout.grow_down(),
-        desc="Grow window down"),
-    Key([mod, "control"], "k", lazy.layout.grow_up(), desc="Grow window up"),
-    Key([mod], "n", lazy.layout.normalize(), desc="Reset all window sizes"),
+    Key([mod], "s", lazy.layout.toggle_split(), desc="Toggle layout split"),
 
-    # Toggle between split and unsplit sides of stack.
-    # Split = all windows displayed
-    # Unsplit = 1 window displayed, like Max layout, but still with
-    # multiple stack panes
-    Key([mod, "shift"], "Return", lazy.layout.toggle_split(),
-        desc="Toggle between split and unsplit sides of stack"),
-    Key([mod], "Return", lazy.spawn(terminal), desc="Launch terminal"),
+    # Kill
+    Key([mod, "shift"], "q", lazy.window.kill(), desc="Kill focused window"),
 
-    # Toggle between different layouts as defined below
-    Key([mod], "Tab", lazy.next_layout(), desc="Toggle between layouts"),
-    Key([mod], "w", lazy.window.kill(), desc="Kill focused window"),
+    # Full screen
+    Key([mod], "f", lazy.window.toggle_fullscreen(), desc="Toggle full screen"),
 
-    Key([mod, "control"], "r", lazy.reload_config(), desc="Reload the config"),
-    Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
-    Key([mod], "r", lazy.spawncmd(),
-        desc="Spawn a command using a prompt widget"),
+    # Resize
+    KeyChord([mod], "r", [
+            Key([], "g", lazy.layout.grow(),       desc="Grow window"),
+            Key([], "s", lazy.layout.shrink(),     desc="Shrink window"),
+            Key([], "n", lazy.layout.normalize(),  desc="Normalize window"),
+            Key([], "m", lazy.layout.maximize(),   desc="Maximize window"),
+            Key([], "h", lazy.layout.grow_left(),  desc="Grow window to the left"),
+            Key([], "l", lazy.layout.grow_right(), desc="Grow window to the right"),
+            Key([], "j", lazy.layout.grow_down(),  desc="Grow window down"),
+            Key([], "k", lazy.layout.grow_up(),    desc="Grow window up"),
+        ],
+        mode="Resize [G]row [S]hrink [N]ormalize [M]aximize [hljk]"
+    ),
+    # }}}}
+    # -------------------------------- Shutdown --------------------------- {{{{
+    KeyChord([mod, "shift"], "e", [
+            Key([], "s", lazy.spawn("shutdown now"), desc="Shutdown"),
+            Key([], "r", lazy.spawn("reboot"),       desc="Reboot"),
+            Key([], "k", lazy.shutdown(),            desc="Shutdown Qtile"),
+        ],
+        mode="[S]utdown [R]eboot [K]ill Qtile"
+    ),
+    # }}}}
+    # ------------------------------- Screenshots ------------------------- {{{{
+    # TODO these shell commands don't seem to work
+    # KeyChord([mod, "shift"], "p", [
+    #         Key([], "a", lazy.spawn("maim --hidecursor --window=$(xdotool getactivewindow) | xclip -selection clipboard -t image/png"), desc="Shutdown"),
+    #         Key([], "s", lazy.spawn("maim --select | xclip -selection clipboard -t image/png" ),       desc="Reboot"),
+    #         Key([], "f", lazy.spawn("maim| xclip -selection clipboard -t image/png" ),       desc="Reboot"),
+    #     ],
+    #     mode="Screenshot"
+    # ),
+    # # }}}}
+    # ----------------------------- Record Desktop ------------------------ {{{{
+    KeyChord([mod, "shift"], "d", [
+            # record
+            Key([], "a", lazy.spawn("record_active_window"), desc="Record active window"),
+            Key([], "f", lazy.spawn("record_full_desktop"),  desc="Record full desktop"),
+
+            # pause/resume
+            Key([], "p", lazy.spawn("killalll recordmydesktop --signal SIGUSR1"), desc="Pause recording"),
+            Key([], "r", lazy.spawn("killalll recordmydesktop --signal SIGUSR1"), desc="Resume recording"),
+
+            # stop/abort
+            Key([], "c", lazy.spawn("killalll recordmydesktop --signal SIGABRT"), desc="Abort recording"),
+            Key([], "s", lazy.spawn("killalll recordmydesktop --signal SIGTERM"), desc="Finish recording"),
+        ],
+        mode="Record Desktop [A]active [F]ull [P]ause [R]esume [C]ancel [S]top"
+    ),
+    # }}}}
+    # ---------------------------- Volume Management ---------------------- {{{{
+    KeyChord([mod, "shift"], "v", [
+            Key([], "m",        lazy.spawn("amixer set Master mute"),   desc="Mute volume"),
+            Key(["shift"], "m", lazy.spawn("amixer set Master unmute"), desc="Unmute volume"),
+            Key([], "l",        lazy.spawn("amixer set Master 5%+"),    desc="Louder 5%"),
+            Key(["shift"], "l", lazy.spawn("amixer set Master 1%+"),    desc="Louder 1%"),
+            Key([], "s",        lazy.spawn("amixer set Master 5%-"),    desc="Softer 5%"),
+            Key(["shift"], "s", lazy.spawn("amixer set Master 1%-"),    desc="Softer 1%"),
+            Key([], "1",        lazy.spawn("amixer set Master 10%"),    desc="Volume 10%"),
+            Key([], "2",        lazy.spawn("amixer set Master 20%"),    desc="Volume 20%"),
+            Key([], "3",        lazy.spawn("amixer set Master 30%"),    desc="Volume 30%"),
+            Key([], "4",        lazy.spawn("amixer set Master 40%"),    desc="Volume 40%"),
+            Key([], "5",        lazy.spawn("amixer set Master 50%"),    desc="Volume 50%"),
+            Key([], "6",        lazy.spawn("amixer set Master 60%"),    desc="Volume 60%"),
+            Key([], "7",        lazy.spawn("amixer set Master 70%"),    desc="Volume 70%"),
+            Key([], "8",        lazy.spawn("amixer set Master 80%"),    desc="Volume 80%"),
+            Key([], "9",        lazy.spawn("amixer set Master 90%"),    desc="Volume 90%"),
+            Key([], "0",        lazy.spawn("amixer set Master 100%"),   desc="Volume 100%"),
+        ],
+        mode="Volume [M]ute [L]ouder [S]ofter [1234567890]"
+    ),
+
+    Key([],        "XF86AudioRaiseVolume", lazy.spawn("amixer set Master 5%+"),    desc="Louder 5%"),
+    Key([],        "XF86AudioLowerVolume", lazy.spawn("amixer set Master 5%-"),    desc="Softer 5%"),
+    Key(["shift"], "XF86AudioRaiseVolume", lazy.spawn("amixer set Master 1%+"),    desc="Louder 1%"),
+    Key(["shift"], "XF86AudioLowerVolume", lazy.spawn("amixer set Master 1%-"),    desc="Softer 1%"),
+    Key([],        "XF86AudioMute",        lazy.spawn("amixer set Master toggle"), desc="Toggle mute"),
+    # }}}}
+    # ---------------------------- Launch Programmes ---------------------- {{{{
+    Key([mod], "d",             lazy.spawn("rofi -combi-modi drun,run -show combi"),                     desc="Launch a programme"),
+    Key([mod], "t",             lazy.spawn("rofi -show window"),                                         desc="Jump to a window"),
+    Key([mod,  "control"], "f", lazy.spawn("alacritty -e ranger"),                                       desc="Open ranger"),
+    Key([mod], "m",             lazy.spawn("unclutter -grab -idle 1 -root &"),                           desc="Hide the mouse"),
+    Key([mod, "shift"], "m",    lazy.spawn("killall unclutter"),                                         desc="Show the mouse"),
+    Key([mod], "Return",        lazy.spawn(terminal),                                                    desc="Launch a terminal"),
+    Key([mod, "shift"], "x",    lazy.spawn("killall unclutter; ~/bin/secure; i3lock-fancy-dualmonitor"), desc="Lock the screen"),
+    # }}}}
+    # ----------------------------- Keyboard Layout ----------------------- {{{{
+    KeyChord([mod], "q", [
+            Key([], "l", lazy.spawn("fcitx-remote -s fcitx-keyboard-us-intl"), desc="Switch to Latin keybord layout"),
+            Key([], "c", lazy.spawn("fcitx-remote -s pinyin"),                 desc="Switch to Chinese keybord layout"),
+            Key([], "r", lazy.spawn("fcitx-remote -s fcitx-keyboard-ru"),      desc="Switch to Russian keybord layout"),
+            Key([], "u", lazy.spawn("fcitx-remote -s fcitx-keyboard-us"),      desc="Switch to English keybord layout"),
+            Key([], "g", lazy.spawn("fcitx-remote -s fcitx-keyboard-gr"),      desc="Switch to Greek keybord layout"),
+            Key([], "k", lazy.spawn("fcitx-remote -s hangul"),                 desc="Switch to Korean keybord layout"),
+        ],
+        mode="Keyboard Layout [U]s [L]atin [C]hinese [R]ussian [G]reek [K]orean"
+    ),
+    # }}}}
+    # -------------------------------- Backlight -------------------------- {{{{
+    KeyChord([mod, "shift"], "b", [
+            Key([], "d", lazy.spawn("backlight dec 3"),   desc="Dim backlight"),
+            Key([], "l", lazy.spawn("backlight inc 3"),   desc="Increase backlight"),
+            Key([], "1", lazy.spawn("backlight set 1"),   desc="Backlight 1%"),
+            Key([], "2", lazy.spawn("backlight set 20"),  desc="Backlight 10%"),
+            Key([], "3", lazy.spawn("backlight set 30"),  desc="Backlight 20%"),
+            Key([], "4", lazy.spawn("backlight set 40"),  desc="Backlight 30%"),
+            Key([], "5", lazy.spawn("backlight set 50"),  desc="Backlight 40%"),
+            Key([], "6", lazy.spawn("backlight set 60"),  desc="Backlight 60%"),
+            Key([], "7", lazy.spawn("backlight set 70"),  desc="Backlight 70%"),
+            Key([], "8", lazy.spawn("backlight set 80"),  desc="Backlight 80%"),
+            Key([], "9", lazy.spawn("backlight set 90"),  desc="Backlight 90%"),
+            Key([], "0", lazy.spawn("backlight set 100"), desc="Backlight 100%"),
+
+	        Key([], "XF86AudioRaiseVolume", lazy.spawn("backlight inc 10"), desc="Backlight increase 10%"),
+	        Key([], "XF86AudioLowerVolume", lazy.spawn("backlight dec 10"), desc="Backlight dim 10%"),
+        ],
+        mode="Backlight [D]arker [L]ighter [1234567890]"
+    ),
+    # }}}}
+    # -------------------------- Multi Monitor Layout --------------------- {{{{
+    KeyChord([mod, "shift"], "s", [
+            Key([], "m", lazy.spawn("mirrorscreen"),     desc="Mirror monitors"),
+            Key([], "l", lazy.spawn("dualscreen_left"),  desc="External monitor on left"),
+            Key([], "r", lazy.spawn("dualscreen_right"), desc="External monitor on right"),
+            Key([], "s", lazy.spawn("singlescreen"),     desc="Only built-in monitor"),
+            Key([], "o", lazy.spawn("otherscreen"),      desc="Only external monitor"),
+        ],
+        mode="Multi Monitor [M]irror [L]eft [R]ight [S]ingle [O]ther"
+    ),
+    # }}}}
+    # --------------------------------- Layout ---------------------------- {{{{
+    Key([mod], "Tab",   lazy.next_layout(), desc="Toggle between layouts"),
+    Key([mod], "space", lazy.layout.next(), desc="Move window focus to other window"),
+    # }}}}
+    # ----------------------------- Qtile Commands ------------------------ {{{{
+    Key([mod, "shift"], "r", lazy.reload_config(), desc="Reload the config"),
+    # }}}}
+]
+# }}}
+# =========================== Auto Start Applications ====================== {{{
+@hook.subscribe.startup_once
+def autostart():
+    autostart_script = os.path.expanduser(config_dir + "/autostart.sh")
+    subprocess.run([autostart_script])
+
+@hook.subscribe.startup
+def autostart_always():
+    autostart_script = os.path.expanduser(config_dir + "/autostart_always.sh")
+    subprocess.run([autostart_script])
+# }}}
+# =================================== Layouts ============================== {{{
+layouts = [
+    layout.Columns(
+        border_focus=blue,
+        margin=margin,
+        border_width=border_width,
+        grow_amount=3*border_width,
+    ),
+    layout.Max(),
+]
+# }}}
+# ================================= Workspaces ============================= {{{
+# ---------------------------------- Defaults ----------------------------- {{{{
+chat_matches = [
+    Match(wm_class=["TelegramDesktop"]),
+    Match(wm_class=["Signal"]),
+    Match(wm_class=["Slack"]),
 ]
 
-groups = [Group(i) for i in "123456789"]
+media_matches = [
+    Match(title=["Spotify"]) # TODO this should probably be done through a hook
+]
+# }}}}
+groups = [
+    Group("1: Main "),
+    Group("2: Code "),
+    Group("3: Web ", layouts=[layout.TreeTab()]),
+    Group("4: Chats ", layouts=[layout.Tile(margin=margin, border_focus=blue)], matches=chat_matches),
+    Group("5: Office "),
+    Group("6: Download "),
+    Group("7: Monitor "),
+    Group("8: ROS "),
+    Group("9: Games "),
+    Group("10: Media ", matches=media_matches),
+]
 
-for i in groups:
+for i in range(len(groups)):
+    key = str((i + 1) % len(groups))
     keys.extend([
-        # mod1 + letter of group = switch to group
-        Key([mod], i.name, lazy.group[i.name].toscreen(),
-            desc="Switch to group {}".format(i.name)),
-
-        # mod1 + shift + letter of group = switch to & move focused window to group
-        Key([mod, "shift"], i.name, lazy.window.togroup(i.name, switch_group=True),
-            desc="Switch to & move focused window to group {}".format(i.name)),
-        # Or, use below if you prefer not to switch to that group.
-        # # mod1 + shift + letter of group = move focused window to group
-        # Key([mod, "shift"], i.name, lazy.window.togroup(i.name),
-        #     desc="move focused window to group {}".format(i.name)),
+        Key([mod],            key, lazy.group[groups[i].name].toscreen(),                  desc="Switch to group {}".format(groups[i].name)),
+        Key([mod, "shift"],   key, lazy.window.togroup(groups[i].name),                    desc="Switch to & move focused window to group {}".format(groups[i].name)),
+        Key([mod, "control"], key, lazy.window.togroup(groups[i].name, switch_group=True), desc="Switch to & move focused window to group {}".format(groups[i].name)),
     ])
 
-layouts = [
-    layout.Columns(border_focus_stack=['#d75f5f', '#8f3d3d'], border_width=4),
-    layout.Max(),
-    # Try more layouts by unleashing below layouts.
-    # layout.Stack(num_stacks=2),
-    # layout.Bsp(),
-    # layout.Matrix(),
-    # layout.MonadTall(),
-    # layout.MonadWide(),
-    # layout.RatioTile(),
-    # layout.Tile(),
-    # layout.TreeTab(),
-    # layout.VerticalTile(),
-    # layout.Zoomy(),
-]
-
+# }}}
+# =================================== Screens ============================== {{{
 widget_defaults = dict(
-    font='sans',
+    font='Source Code Pro bold',
     fontsize=12,
     padding=3,
 )
@@ -130,66 +278,60 @@ screens = [
         bottom=bar.Bar(
             [
                 widget.CurrentLayout(),
-                widget.GroupBox(),
-                widget.Prompt(),
-                widget.WindowName(),
+
+                # TODO the colors don't seem to be working
+                widget.GroupBox(active=text_color,
+                                disable_drag=True,
+                                hide_unused=True,
+                                border_width=0,
+                                block_highlight_text_color=green,
+                                urgent_alert_method='text',
+                                urgent_text=red,
+                                this_current_screen_border=bg_color
+                                ),
+                widget.Spacer(),
+
                 widget.Chord(
                     chords_colors={
                         'launch': ("#ff0000", "#ffffff"),
                     },
-                    name_transform=lambda name: name.upper(),
                 ),
-                widget.TextBox("default config", name="default"),
-                widget.TextBox("Press &lt;M-r&gt; to spawn", foreground="#d75f5f"),
-                widget.Systray(),
+                widget.CheckUpdates(),
+                # widget.Systray(),
+
+                widget.MemoryGraph(border_color=bg_color, graph_color=yellow, fill_color=yellow),
+                widget.CPUGraph(border_color=bg_color,    graph_color=blue,   fill_color=blue),
+                widget.NetGraph(border_color=bg_color,    graph_color=green,   fill_color=green),
+
                 widget.Clock(format='%Y-%m-%d %a %I:%M %p'),
-                widget.QuickExit(),
+
+                widget.Battery(format="{percent:2.0%} {char}",
+                               charge_char="",
+                               discharge_char="",
+                               low_foreground=red,
+                               foreground=green
+                               ),
             ],
             24,
-            # border_width=[2, 0, 2, 0],  # Draw top and bottom borders
-            # border_color=["ff00ff", "000000", "ff00ff", "000000"]  # Borders are magenta
+            background=bg_color
         ),
     ),
 ]
-
-# Drag floating layouts.
+# }}}
+# ============================== Floating Windows ========================== {{{
 mouse = [
-    Drag([mod], "Button1", lazy.window.set_position_floating(),
-         start=lazy.window.get_position()),
-    Drag([mod], "Button3", lazy.window.set_size_floating(),
-         start=lazy.window.get_size()),
+    Drag([mod],  "Button1", lazy.window.set_position_floating(), start=lazy.window.get_position()),
+    Drag([mod],  "Button3", lazy.window.set_size_floating(),     start=lazy.window.get_size()),
     Click([mod], "Button2", lazy.window.bring_to_front())
 ]
 
-dgroups_key_binder = None
-dgroups_app_rules = []  # type: List
-follow_mouse_focus = True
-bring_front_click = False
-cursor_warp = False
 floating_layout = layout.Floating(float_rules=[
-    # Run the utility of `xprop` to see the wm class and name of an X client.
     *layout.Floating.default_float_rules,
-    Match(wm_class='confirmreset'),  # gitk
-    Match(wm_class='makebranch'),  # gitk
-    Match(wm_class='maketag'),  # gitk
+    Match(wm_class='confirmreset'), # gitk
+    Match(wm_class='makebranch'),   # gitk
+    Match(wm_class='maketag'),      # gitk
     Match(wm_class='ssh-askpass'),  # ssh-askpass
-    Match(title='branchdialog'),  # gitk
-    Match(title='pinentry'),  # GPG key password entry
+    Match(title='branchdialog'),    # gitk
+    Match(title='pinentry'),        # GPG key password entry
 ])
-auto_fullscreen = True
-focus_on_window_activation = "smart"
-reconfigure_screens = True
-
-# If things like steam games want to auto-minimize themselves when losing
-# focus, should we respect this or not?
-auto_minimize = True
-
-# XXX: Gasp! We're lying here. In fact, nobody really uses or cares about this
-# string besides java UI toolkits; you can see several discussions on the
-# mailing lists, GitHub issues, and other WM documentation that suggest setting
-# this string if your java app doesn't work correctly. We may as well just lie
-# and say that we're a working one by default.
-#
-# We choose LG3D to maximize irony: it is a 3D non-reparenting WM written in
-# java that happens to be on java's whitelist.
-wmname = "LG3D"
+# }}}
