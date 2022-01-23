@@ -5,6 +5,7 @@ from libqtile import bar, layout, widget, hook
 from libqtile.config import Click, Drag, Group, Key, Match, Screen, KeyChord
 from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
+from libqtile.command import lazy
 
 import subprocess
 import os
@@ -27,24 +28,6 @@ terminal             = guess_terminal()
 border_width         = 1
 margin               = 10
 config_dir           = os.path.expanduser("~/.config/qtile")
-
-# ----------------------------------- Colors ------------------------------ {{{{
-bg_color             = "#32302f"
-bg_color_transparent = "#ef2f343f"
-inactive_bg_color    = "#32302f"
-text_color           = "#ebdbb2"
-inactive_text_color  = "#929378"
-urgent_bg_color      = "#cc241d"
-
-black                = "#282828"
-red                  = "#cc241d"
-green                = "#98971a"
-yellow               = "#d79921"
-blue                 = "#458588"
-magenta              = "#b16286"
-cyan                 = "#689d6a"
-white                = "#a89984"
-# }}}}
 # }}}
 # ================================ Key Bindings ============================ {{{
 keys = [
@@ -223,14 +206,49 @@ def autostart_always():
     autostart_script = os.path.expanduser(config_dir + "/autostart_always.sh")
     subprocess.run([autostart_script])
 # }}}
+# ==================================== Theme =============================== {{{
+# ----------------------------------- Colors ------------------------------ {{{{
+bg_color             = "#32302f"
+bg_color_transparent = "#ef2f343f"
+inactive_bg_color    = "#32302f"
+text_color           = "#ebdbb2"
+inactive_text_color  = "#929378"
+urgent_bg_color      = "#cc241d"
+
+black                = "#282828"
+red                  = "#cc241d"
+green                = "#98971a"
+yellow               = "#d79921"
+blue                 = "#458588"
+magenta              = "#b16286"
+cyan                 = "#689d6a"
+white                = "#a89984"
+# }}}}
+
+theme = {
+    # Columns
+    "border_focus":       green,
+    "border_focus_stack": blue,
+    "border_normal":      bg_color,
+    "margin":             margin,
+    "border_width":       border_width,
+    "grow_amount":        3*border_width,
+    "margin_on_single":   0,
+
+    # TreeTab
+    "active_bg":          bg_color,
+    "active_fg":          green,
+    "bg_color":           bg_color,
+    "inactive_bg":        bg_color,
+    "urgent_fg":          red,
+    "urgent_bg":          bg_color,
+    "panel_width":        150,
+    "level_shift":        20,
+}
+# }}}
 # =================================== Layouts ============================== {{{
 layouts = [
-    layout.Columns(
-        border_focus=blue,
-        margin=margin,
-        border_width=border_width,
-        grow_amount=3*border_width,
-    ),
+    layout.Columns(**theme),
     layout.Max(),
 ]
 # }}}
@@ -249,8 +267,8 @@ media_matches = [
 groups = [
     Group("1: Main "),
     Group("2: Code "),
-    Group("3: Web ", layouts=[layout.TreeTab(active_bg=bg_color, active_fg=green, bg_color=bg_color, inactive_bg=bg_color, sections=["General", "Code"], urgent_fg=red, urgent_bg=bg_color, panel_width=150, level_shift=20)]),
-    Group("4: Chats ", layouts=[layout.Tile(margin=margin, border_focus=blue)], matches=chat_matches),
+    Group("3: Web ", layouts=[layout.TreeTab(sections=["General", "Code", "Ah"], **theme)]),
+    Group("4: Chats ", layouts=[layout.Tile(**theme)], matches=chat_matches),
     Group("5: Office "),
     Group("6: Download "),
     Group("7: Monitor "),
