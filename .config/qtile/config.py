@@ -188,7 +188,7 @@ keys = [
     # }}}}
     # --------------------------------- Layout ---------------------------- {{{{
     Key([mod], "Tab",   lazy.next_layout(), desc="Toggle between layouts"),
-    Key([mod], "space", lazy.layout.next(), desc="Move window focus to other window"),
+    Key([mod], "space", lazy.layout.next(), lazy.layout.shuffle_right(), desc="Move window focus to other window"),
     # }}}}
     # ----------------------------- Qtile Commands ------------------------ {{{{
     Key([mod, "shift"], "r", lazy.reload_config(), desc="Reload the config"),
@@ -317,7 +317,7 @@ screens = [
                         'launch': ("#ff0000", "#ffffff"),
                     },
                 ),
-                widget.CheckUpdates(),
+                widget.CheckUpdates(custom_command="checkupdates | wc -l"),
                 # widget.Systray(),
 
                 widget.MemoryGraph(border_color=bg_color, graph_color=yellow, fill_color=yellow),
