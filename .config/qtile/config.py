@@ -292,6 +292,7 @@ widget_defaults = dict(
     font='Source Code Pro bold',
     fontsize=12,
     padding=5,
+    foreground=text_color
 )
 extension_defaults = widget_defaults.copy()
 
@@ -309,7 +310,7 @@ screens = [
                                 block_highlight_text_color=green,
                                 urgent_alert_method='text',
                                 urgent_text=red,
-                                this_current_screen_border=bg_color
+                                this_current_screen_border=bg_color,
                                 ),
                 widget.Spacer(),
 
@@ -318,7 +319,8 @@ screens = [
                         'launch': ("#ff0000", "#ffffff"),
                     },
                 ),
-                widget.CheckUpdates(custom_command="/sbin/checkupdates", update_interval = 60 * 30, foreground=yellow, color_have_updates=yellow),
+                widget.CheckUpdates(custom_command="/sbin/checkupdates", update_interval = 60 * 30, foreground=yellow, colour_have_updates=text_color, display_format="Updates: {updates}"),
+                widget.CheckUpdates(custom_command="/sbin/checkupdates-aur", update_interval = 60 * 30, foreground=yellow, colour_have_updates=yellow, display_format="AUR: {updates}"),
                 # widget.Systray(),
 
                 widget.MemoryGraph(border_color=bg_color, graph_color=yellow, fill_color=yellow),
