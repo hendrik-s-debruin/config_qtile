@@ -25,7 +25,7 @@ wmname                     = "LG3D"
 # =================================== Globals ============================== {{{
 mod                  = "mod4"
 terminal             = guess_terminal()
-border_width         = 1
+border_width         = 2
 margin               = 10
 config_dir           = os.path.expanduser("~/.config/qtile")
 # }}}
@@ -57,14 +57,14 @@ keys = [
 
     # Resize
     KeyChord([mod], "r", [
-            Key([], "g", lazy.layout.grow(),       desc="Grow window"),
-            Key([], "s", lazy.layout.shrink(),     desc="Shrink window"),
-            Key([], "n", lazy.layout.normalize(),  desc="Normalize window"),
-            Key([], "m", lazy.layout.maximize(),   desc="Maximize window"),
-            Key([], "h", lazy.layout.grow_left(),  desc="Grow window to the left"),
-            Key([], "l", lazy.layout.grow_right(), desc="Grow window to the right"),
-            Key([], "j", lazy.layout.grow_down(),  desc="Grow window down"),
-            Key([], "k", lazy.layout.grow_up(),    desc="Grow window up"),
+            Key([], "g", lazy.layout.increase_ratio(),  desc="Grow window"),
+            Key([], "s", lazy.layout.decrease_ratio(), desc="Shrink window"),
+            Key([], "n", lazy.layout.normalize(),      desc="Normalize window"),
+            Key([], "m", lazy.layout.maximize(),       desc="Maximize window"),
+            Key([], "h", lazy.layout.grow_left(),      desc="Grow window to the left"),
+            Key([], "l", lazy.layout.grow_right(),     desc="Grow window to the right"),
+            Key([], "j", lazy.layout.grow_down(),      desc="Grow window down"),
+            Key([], "k", lazy.layout.grow_up(),        desc="Grow window up"),
         ],
         mode="Resize [G]row [S]hrink [N]ormalize [M]aximize [hljk]"
     ),
@@ -227,23 +227,24 @@ white                = "#a89984"
 
 theme = {
     # Columns
-    "border_focus":       green,
-    "border_focus_stack": blue,
-    "border_normal":      bg_color,
-    "margin":             margin,
-    "border_width":       border_width,
-    "grow_amount":        3*border_width,
-    "margin_on_single":   0,
+    "border_focus":        green,
+    "border_focus_stack":  blue,
+    "border_normal":       bg_color,
+    "border_normal_stack": bg_color,
+    "margin":              margin,
+    "border_width":        border_width,
+    "grow_amount":         3*border_width,
+    "margin_on_single":    0,
 
     # TreeTab
-    "active_bg":          bg_color,
-    "active_fg":          green,
-    "bg_color":           bg_color,
-    "inactive_bg":        bg_color,
-    "urgent_fg":          red,
-    "urgent_bg":          bg_color,
-    "panel_width":        150,
-    "level_shift":        20,
+    "active_bg":           bg_color,
+    "active_fg":           green,
+    "bg_color":            bg_color,
+    "inactive_bg":         bg_color,
+    "urgent_fg":           red,
+    "urgent_bg":           bg_color,
+    "panel_width":         150,
+    "level_shift":         20,
 }
 # }}}
 # =================================== Layouts ============================== {{{
@@ -268,7 +269,7 @@ groups = [
     Group("1: Main "),
     Group("2: Code "),
     Group("3: Web ", layouts=[layout.TreeTab(sections=["General", "Code", "Ah"], **theme)]),
-    Group("4: Chats ", layouts=[layout.Tile(**theme)], matches=chat_matches),
+    Group("4: Chats ", layouts=[layout.Tile(**theme), layout.Max()], matches=chat_matches),
     Group("5: Office "),
     Group("6: Download "),
     Group("7: Monitor "),
@@ -290,7 +291,7 @@ for i in range(len(groups)):
 widget_defaults = dict(
     font='Source Code Pro bold',
     fontsize=12,
-    padding=3,
+    padding=5,
 )
 extension_defaults = widget_defaults.copy()
 
@@ -317,7 +318,7 @@ screens = [
                         'launch': ("#ff0000", "#ffffff"),
                     },
                 ),
-                widget.CheckUpdates(custom_command="checkupdates | wc -l"),
+                widget.CheckUpdates(custom_command="/sbin/checkupdates", update_interval = 60 * 30, foreground=yellow, color_have_updates=yellow),
                 # widget.Systray(),
 
                 widget.MemoryGraph(border_color=bg_color, graph_color=yellow, fill_color=yellow),
