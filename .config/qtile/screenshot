@@ -1,0 +1,27 @@
+#!/bin/env bash
+
+function error() {
+	echo "Error: expected argument: [active | section | full]"
+	exit -1
+}
+
+if [ $# -ne 1 ]; then
+	error
+fi
+
+if [ $1 == "active" ]; then
+	maim --hidecursor --window=$(xdotool getactivewindow) | xclip -selection clipboard -t image/png
+	exit 0
+fi
+
+if [ $1 == "section" ]; then
+	maim --select | xclip -selection clipboard -t image/png
+	exit 0
+fi
+
+if [ $1 == "full" ]; then
+	maim | xclip -selection clipboard -t image/png
+	exit 0
+fi
+
+error

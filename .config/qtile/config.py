@@ -89,15 +89,14 @@ keys = [
     ),
     # }}}}
     # ------------------------------- Screenshots ------------------------- {{{{
-    # TODO these shell commands don't seem to work
-    # KeyChord([mod, "shift"], "p", [
-    #         Key([], "a", lazy.spawn("maim --hidecursor --window=$(xdotool getactivewindow) | xclip -selection clipboard -t image/png"), desc="Shutdown"),
-    #         Key([], "s", lazy.spawn("maim --select | xclip -selection clipboard -t image/png" ),       desc="Reboot"),
-    #         Key([], "f", lazy.spawn("maim| xclip -selection clipboard -t image/png" ),       desc="Reboot"),
-    #     ],
-    #     mode="Screenshot"
-    # ),
-    # # }}}}
+    KeyChord([mod, "shift"], "p", [
+            Key([], "a", lazy.spawn(config_dir + "/screenshot active"),  desc="Take a screenshot of the active window"),
+            Key([], "s", lazy.spawn(config_dir + "/screenshot section"), desc="Take a screenshot of a section of the screen"),
+            Key([], "f", lazy.spawn(config_dir + "/screenshot full"),    desc="Take a screenshot of the entire desktop"),
+        ],
+        mode="Screenshot [A]ctive [S]ection [F]ull"
+    ),
+    # }}}}
     # ----------------------------- Record Desktop ------------------------ {{{{
     KeyChord([mod, "shift"], "d", [
             # record
@@ -144,13 +143,13 @@ keys = [
     Key([],        "XF86AudioMute",        lazy.spawn("amixer set Master toggle"), desc="Toggle mute"),
     # }}}}
     # ---------------------------- Launch Programmes ---------------------- {{{{
-    Key([mod], "d",             lazy.spawn("rofi -combi-modi drun,run -show combi"),                     desc="Launch a programme"),
-    Key([mod], "t",             lazy.spawn("rofi -show window"),                                         desc="Jump to a window"),
-    Key([mod,  "control"], "f", lazy.spawn("alacritty -e ranger"),                                       desc="Open ranger"),
-    Key([mod], "m",             lazy.spawn("unclutter -grab -idle 1 -root &"),                           desc="Hide the mouse"),
-    Key([mod, "shift"], "m",    lazy.spawn("killall unclutter"),                                         desc="Show the mouse"),
-    Key([mod], "Return",        lazy.spawn(terminal),                                                    desc="Launch a terminal"),
-    Key([mod, "shift"], "x",    lazy.spawn("killall unclutter; ~/bin/secure; i3lock-fancy-dualmonitor"), desc="Lock the screen"),
+    Key([mod], "d",             lazy.spawn("rofi -combi-modi drun,run -show combi"), desc="Launch a programme"),
+    Key([mod], "t",             lazy.spawn("rofi -show window"),                     desc="Jump to a window"),
+    Key([mod,  "control"], "f", lazy.spawn("alacritty -e ranger"),                   desc="Open ranger"),
+    Key([mod], "m",             lazy.spawn("unclutter -grab -idle 1 -root &"),       desc="Hide the mouse"),
+    Key([mod, "shift"], "m",    lazy.spawn("killall unclutter"),                     desc="Show the mouse"),
+    Key([mod], "Return",        lazy.spawn(terminal),                                desc="Launch a terminal"),
+    Key([mod, "shift"], "x",    lazy.spawn(config_dir + "/lock_qtile"),              desc="Lock the screen"),
     # }}}}
     # ----------------------------- Keyboard Layout ----------------------- {{{{
     KeyChord([mod], "q", [
