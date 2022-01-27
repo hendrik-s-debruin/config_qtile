@@ -30,6 +30,12 @@ margin               = 10
 config_dir           = os.path.expanduser("~/.config/qtile")
 # }}}
 # ================================ Key Bindings ============================ {{{
+@lazy.function
+def active_group_to_next_screen(qtile):
+    current_group = qtile.current_group
+    qtile.cmd_next_screen()
+    current_group.cmd_toscreen()
+
 keys = [
     # ---------------------------- Window management ---------------------- {{{{
     # Focus
@@ -45,6 +51,10 @@ keys = [
     Key([mod, "shift"],   "k", lazy.layout.shuffle_up(),    lazy.layout.move_up(),    desc="Move window up"),
     Key([mod, "control"], "k", lazy.layout.section_up(),                              desc="Move window up a section"),
     Key([mod, "control"], "j", lazy.layout.section_down(),                            desc="Move window down a section"),
+
+    # Screen management
+    Key([mod], "space",          lazy.next_screen(),           desc="Focus next screen"),
+    Key([mod, "shift"], "space", active_group_to_next_screen,  desc="Move current group to the next screen"),
 
     Key([mod], "s", lazy.layout.toggle_split(), desc="Toggle layout split"),
 
@@ -188,7 +198,7 @@ keys = [
     # }}}}
     # --------------------------------- Layout ---------------------------- {{{{
     Key([mod], "Tab",   lazy.next_layout(), desc="Toggle between layouts"),
-    Key([mod], "space", lazy.layout.next(), lazy.layout.shuffle_right(), desc="Move window focus to other window"),
+    Key([mod], "s",     lazy.layout.next(), lazy.layout.shuffle_right(), desc="Move window focus to other window"),
     # }}}}
     # ----------------------------- Qtile Commands ------------------------ {{{{
     Key([mod, "shift"], "r", lazy.reload_config(), desc="Reload the config"),
