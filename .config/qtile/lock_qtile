@@ -1,0 +1,6 @@
+#!/bin/env bash
+
+killall unclutter
+~/bin/secure
+i3lock-fancy-dualmonitor
+unclutter -grab -idle 1 -root &
