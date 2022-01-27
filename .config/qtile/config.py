@@ -305,51 +305,48 @@ widget_defaults = dict(
 )
 extension_defaults = widget_defaults.copy()
 
-screens = [
-    Screen(
-        bottom=bar.Bar(
-            [
-                widget.CurrentLayout(),
+# current_layout = widget.CurrentLayout()
 
-                # TODO the colors don't seem to be working
-                widget.GroupBox(active=text_color,
-                                disable_drag=True,
-                                hide_unused=True,
-                                border_width=0,
-                                block_highlight_text_color=green,
-                                urgent_alert_method='text',
-                                urgent_text=red,
-                                this_current_screen_border=bg_color,
-                                ),
-                widget.Spacer(),
+groupbox_settings = {
+    "active": text_color,
+    "disable_drag": True,
+    "hide_unused": False,
+    "border_width": 0,
+    # "block_highlight_text_color": green,
+    "urgent_alert_method": 'block',
+    "urgent_text": green,
+    "urgent_border": red,
+    # "background": yellow,
+    "highlight_color": green,
+    "highlight_method": "line",
 
-                widget.Chord(
-                    chords_colors={
-                        'launch': ("#ff0000", "#ffffff"),
-                    },
-                ),
-                widget.CheckUpdates(custom_command="/sbin/checkupdates", update_interval = 60 * 30, foreground=yellow, colour_have_updates=text_color, display_format="Updates: {updates}"),
-                widget.CheckUpdates(custom_command="/sbin/checkupdates-aur", update_interval = 60 * 30, foreground=yellow, colour_have_updates=yellow, display_format="AUR: {updates}"),
-                # widget.Systray(),
+    # inactive monitor active workspace shown on active monitor
+    "other_screen_border": bg_color,
 
-                widget.MemoryGraph(border_color=bg_color, graph_color=yellow, fill_color=yellow),
-                widget.CPUGraph(border_color=bg_color,    graph_color=blue,   fill_color=blue),
-                widget.NetGraph(border_color=bg_color,    graph_color=green,   fill_color=green),
+    # active monitor active workspace shown on active monitor
+    "this_current_screen_border": green,
 
-                widget.Clock(format='%Y-%m-%d %a %I:%M %p'),
+    # active monitor active workspace shown on inactive monitor
+    "other_current_screen_border": bg_color,
 
-                widget.Battery(format="{percent:2.0%} {char}",
-                               charge_char="",
-                               discharge_char="",
-                               low_foreground=red,
-                               foreground=green
-                               ),
-            ],
-            24,
-            background=bg_color
-        ),
-    ),
-]
+    # Inactive monitor active workspace shown on inactive monitor
+    "this_screen_border": bg_color,
+}
+
+spacer       = widget.Spacer()
+chord        = widget.Chord(chords_colors={'launch': ("#ff0000", "#ffffff"), })
+updates      = widget.CheckUpdates(custom_command="/sbin/checkupdates", update_interval=60 * 30, foreground=yellow, colour_have_updates=text_color, display_format="Updates: {updates}")
+updates_aur  = widget.CheckUpdates(custom_command="/sbin/checkupdates-aur", update_interval=60 * 30, foreground=yellow, colour_have_updates=yellow, display_format="AUR: {updates}")
+memory_graph = widget.MemoryGraph( border_color=bg_color, graph_color=yellow, fill_color=yellow)
+cpu_graph    = widget.CPUGraph(border_color=bg_color, graph_color=blue,   fill_color=blue)
+net_graph    = widget.NetGraph(border_color=bg_color, graph_color=green,   fill_color=green)
+clock        = widget.Clock(format='%Y-%m-%d %a %I:%M %p')
+battery      = widget.Battery(format="{percent:2.0%} {char}", charge_char="", discharge_char="", low_foreground=red, foreground=green)
+
+bar1 = bar.Bar([ widget.CurrentLayout(), widget.GroupBox(**groupbox_settings), spacer, chord, updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=bg_color)
+bar2 = bar.Bar([ widget.CurrentLayout(), widget.GroupBox(**groupbox_settings), spacer, chord, updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=bg_color)
+
+screens = [ Screen(bottom=bar1), Screen(bottom=bar2), ]
 # }}}
 # ============================== Floating Windows ========================== {{{
 mouse = [
