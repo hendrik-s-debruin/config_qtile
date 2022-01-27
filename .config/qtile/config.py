@@ -275,20 +275,16 @@ media_matches = [
 ]
 # }}}}
 groups = [
-    Group("1: Main "),
-    Group("2: Code "),
-    Group("3: Web ", layouts=[layout.TreeTab(sections=["General", "Code", "Ah"], **theme)]),
-    Group("4: Chats ", layouts=[layout.Tile(**theme), layout.Max()], matches=chat_matches),
-    Group("5: Office "),
-    Group("6: Download "),
-    Group("7: Monitor "),
-    Group("8: ROS "),
-    Group("9: Games "),
-    Group("10: Media ", matches=media_matches),
+    Group(""),
+    Group(""),
+    Group("", layouts=[layout.TreeTab(sections=["General", "Code", "Ah"], **theme)]),
+    Group("", layouts=[layout.Tile(**theme), layout.Max()], matches=chat_matches),
+    Group(""),
+    Group("", matches=media_matches),
 ]
 
 for i in range(len(groups)):
-    key = str((i + 1) % len(groups))
+    key = str(i + 1)
     keys.extend([
         Key([mod],            key, lazy.group[groups[i].name].toscreen(),                  desc="Switch to group {}".format(groups[i].name)),
         Key([mod, "shift"],   key, lazy.window.togroup(groups[i].name),                    desc="Switch to & move focused window to group {}".format(groups[i].name)),
@@ -309,6 +305,7 @@ extension_defaults = widget_defaults.copy()
 
 groupbox_settings = {
     "active": text_color,
+    "inactive": inactive_text_color,
     "disable_drag": True,
     "hide_unused": False,
     "border_width": 0,
