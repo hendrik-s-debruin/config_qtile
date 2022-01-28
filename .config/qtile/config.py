@@ -6,8 +6,14 @@ from libqtile.config import Click, Drag, Group, Key, Match, Screen, KeyChord
 from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
 from libqtile.command import lazy
+from libqtile.layout.tree import Section as TreeSection
 import subprocess
 import os
+try:
+    from notify import notification
+except:
+    pass
+from libqtile.core.manager import Qtile
 # }}}
 # =============================== Qtile Settings =========================== {{{
 auto_fullscreen            = True
@@ -256,10 +262,16 @@ theme = {
 }
 # }}}
 # =================================== Layouts ============================== {{{
+# Default layouts
 layouts = [
     layout.Columns(**theme),
     layout.Max(),
 ]
+
+web_tree_layout = layout.TreeTab(sections=["General", "Code"], **theme)
+chats_layout    = layout.Tile(**theme)
+
+# Special layouts
 # }}}
 # ================================= Workspaces ============================= {{{
 # ---------------------------------- Defaults ----------------------------- {{{{
@@ -276,8 +288,8 @@ media_matches = [
 groups = [
     Group(""),
     Group(""),
-    Group("", layouts=[layout.TreeTab(sections=["General", "Code", "Ah"], **theme)]),
-    Group("", layouts=[layout.Tile(**theme), layout.Max()], matches=chat_matches),
+    Group("", layouts=[web_tree_layout]),
+    Group("", layouts=[chats_layout, layout.Max()], matches=chat_matches),
     Group(""),
     Group("", matches=media_matches),
 ]
@@ -327,7 +339,7 @@ groupbox_settings = {
 }
 
 spacer       = widget.Spacer()
-chord        = widget.Chord(chords_colors={'launch': ("#ff0000", "#ffffff"), })
+chord        = widget.Chord(background=red)
 updates      = widget.CheckUpdates(custom_command="/sbin/checkupdates", update_interval=60 * 30, foreground=yellow, colour_have_updates=text_color, display_format="Updates: {updates}")
 updates_aur  = widget.CheckUpdates(custom_command="/sbin/checkupdates-aur", update_interval=60 * 30, foreground=yellow, colour_have_updates=yellow, display_format="AUR: {updates}")
 memory_graph = widget.MemoryGraph( border_color=bg_color, graph_color=yellow, fill_color=yellow)
@@ -335,9 +347,26 @@ cpu_graph    = widget.CPUGraph(border_color=bg_color, graph_color=blue,   fill_c
 net_graph    = widget.NetGraph(border_color=bg_color, graph_color=green,   fill_color=green)
 clock        = widget.Clock(format='%Y-%m-%d %a %I:%M %p')
 battery      = widget.Battery(format="{percent:2.0%} {char}", charge_char="", discharge_char="", low_foreground=red, foreground=green)
+prompt       = widget.Prompt()
 
-bar1 = bar.Bar([ widget.GroupBox(**groupbox_settings), widget.CurrentLayout(), spacer, chord, updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=bg_color)
-bar2 = bar.Bar([ widget.GroupBox(**groupbox_settings), widget.CurrentLayout(), spacer, chord, updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=bg_color)
+bar1 = bar.Bar([ widget.GroupBox(**groupbox_settings), widget.CurrentLayout(), prompt, spacer, chord, updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=bg_color)
+bar2 = bar.Bar([ widget.GroupBox(**groupbox_settings), widget.CurrentLayout(), prompt, spacer, chord, updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=bg_color)
+
+def add_tree_section(text: str):
+    # web_tree_layout._tree.add_section(text)
+    notification("END: ", text)
+    info = str(web_tree_layout.cmd_info())
+    notification(info)
+    notification(text)
+
+@lazy.function
+def my_funtion(qtile: Qtile):
+    web_tree_layout.cmd_toscreen()
+    prompt.start_input("Add Section", add_tree_section)
+
+keys.extend([
+    Key([mod, "shift"], "i", my_funtion, desc="Does the thing")
+])
 
 screens = [ Screen(bottom=bar1), Screen(bottom=bar2), ]
 # }}}
