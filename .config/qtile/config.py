@@ -336,8 +336,8 @@ net_graph    = widget.NetGraph(border_color=bg_color, graph_color=green,   fill_
 clock        = widget.Clock(format='%Y-%m-%d %a %I:%M %p')
 battery      = widget.Battery(format="{percent:2.0%} {char}", charge_char="", discharge_char="", low_foreground=red, foreground=green)
 
-bar1 = bar.Bar([ widget.CurrentLayout(), widget.GroupBox(**groupbox_settings), spacer, chord, updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=bg_color)
-bar2 = bar.Bar([ widget.CurrentLayout(), widget.GroupBox(**groupbox_settings), spacer, chord, updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=bg_color)
+bar1 = bar.Bar([ widget.GroupBox(**groupbox_settings), widget.CurrentLayout(), spacer, chord, updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=bg_color)
+bar2 = bar.Bar([ widget.GroupBox(**groupbox_settings), widget.CurrentLayout(), spacer, chord, updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=bg_color)
 
 screens = [ Screen(bottom=bar1), Screen(bottom=bar2), ]
 # }}}
