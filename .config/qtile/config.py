@@ -245,8 +245,8 @@ theme = {
     "margin_on_single":    0,
 
     # TreeTab
-    "active_bg":           bg_color,
-    "active_fg":           green,
+    "active_bg":           green,
+    "active_fg":           bg_color,
     "bg_color":            bg_color,
     "inactive_bg":         bg_color,
     "urgent_fg":           red,
