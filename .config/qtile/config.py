@@ -6,7 +6,6 @@ from libqtile.config import Click, Drag, Group, Key, Match, Screen, KeyChord
 from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
 from libqtile.command import lazy
-
 import subprocess
 import os
 # }}}
@@ -56,7 +55,7 @@ keys = [
     Key([mod], "space",          lazy.next_screen(),           desc="Focus next screen"),
     Key([mod, "shift"], "space", active_group_to_next_screen,  desc="Move current group to the next screen"),
 
-    Key([mod], "s", lazy.layout.toggle_split(), desc="Toggle layout split"),
+    Key([mod], "w", lazy.layout.toggle_split(), desc="Toggle layout split"),
 
     # Kill
     Key([mod, "shift"], "q", lazy.window.kill(), desc="Kill focused window"),
@@ -290,7 +289,6 @@ for i in range(len(groups)):
         Key([mod, "shift"],   key, lazy.window.togroup(groups[i].name),                    desc="Switch to & move focused window to group {}".format(groups[i].name)),
         Key([mod, "control"], key, lazy.window.togroup(groups[i].name, switch_group=True), desc="Switch to & move focused window to group {}".format(groups[i].name)),
     ])
-
 # }}}
 # =================================== Screens ============================== {{{
 widget_defaults = dict(
@@ -300,8 +298,6 @@ widget_defaults = dict(
     foreground=text_color
 )
 extension_defaults = widget_defaults.copy()
-
-# current_layout = widget.CurrentLayout()
 
 groupbox_settings = {
     "active": text_color,
