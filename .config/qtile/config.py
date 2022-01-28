@@ -285,10 +285,11 @@ media_matches = [
     Match(title=["Spotify"]) # TODO this should probably be done through a hook
 ]
 # }}}}
+web_group = Group("", layouts=[web_tree_layout])
 groups = [
     Group(""),
     Group(""),
-    Group("", layouts=[web_tree_layout]),
+    web_group,
     Group("", layouts=[chats_layout, layout.Max()], matches=chat_matches),
     Group(""),
     Group("", matches=media_matches),
@@ -313,6 +314,7 @@ extension_defaults = widget_defaults.copy()
 
 groupbox_settings = {
     "active": text_color,
+    "rounded": False,
     "inactive": inactive_text_color,
     "disable_drag": True,
     "hide_unused": False,
@@ -324,6 +326,8 @@ groupbox_settings = {
     # "background": yellow,
     "highlight_color": green,
     "highlight_method": "line",
+    "margin_x": 0,
+    "padding_x": 10,
 
     # inactive monitor active workspace shown on active monitor
     "other_screen_border": bg_color,
@@ -353,16 +357,16 @@ bar1 = bar.Bar([ widget.GroupBox(**groupbox_settings), widget.CurrentLayout(), p
 bar2 = bar.Bar([ widget.GroupBox(**groupbox_settings), widget.CurrentLayout(), prompt, spacer, chord, updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=bg_color)
 
 def add_tree_section(text: str):
-    # web_tree_layout._tree.add_section(text)
     notification("END: ", text)
-    info = str(web_tree_layout.cmd_info())
-    notification(info)
-    notification(text)
+    # info = str(web_tree_layout.cmd_info())
+    # notification(info)
+    # notification(text)
 
 @lazy.function
 def my_funtion(qtile: Qtile):
-    web_tree_layout.cmd_toscreen()
-    prompt.start_input("Add Section", add_tree_section)
+    # web_tree_layout.cmd_toscreen()
+    notification("NOTIFICATION")
+    # prompt.start_input("Add Section", add_tree_section)
 
 keys.extend([
     Key([mod, "shift"], "i", my_funtion, desc="Does the thing")
