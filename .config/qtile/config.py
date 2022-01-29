@@ -1,5 +1,5 @@
 #  ================================== Imports ============================== {{{
-from typing import List  # noqa: F401
+from typing import List , Optional, Tuple # noqa: F401
 
 from libqtile import bar, layout, widget, hook
 from libqtile.config import Click, Drag, Group, Key, Match, Screen, KeyChord
@@ -7,8 +7,10 @@ from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
 from libqtile.command import lazy
 from libqtile.layout.tree import Section as TreeSection
+from libqtile.command.client import InteractiveCommandClient
 import subprocess
 import os
+from typing import NamedTuple, Any
 try:
     from notify import notification
 except:
@@ -251,14 +253,20 @@ theme = {
     "margin_on_single":    0,
 
     # TreeTab
-    "active_bg":           green,
-    "active_fg":           bg_color,
-    "bg_color":            bg_color,
-    "inactive_bg":         bg_color,
-    "urgent_fg":           red,
-    "urgent_bg":           bg_color,
-    "panel_width":         150,
-    "level_shift":         20,
+    "active_bg":        green,
+    "active_fg":        bg_color,
+    "bg_color":         bg_color,
+    "inactive_bg":      bg_color,
+    "urgent_fg":        red,
+    "urgent_bg":        bg_color,
+    "panel_width":      150,
+    "level_shift":      20,
+    "font":             "Source Code Pro Bold",
+    "section_fg":       text_color,
+    "section_fontsize": 14,
+    "section_fg":       white,
+    "fontsize":         11,
+
 }
 # }}}
 # =================================== Layouts ============================== {{{
@@ -344,8 +352,8 @@ groupbox_settings = {
 
 spacer       = widget.Spacer()
 chord        = widget.Chord(background=red)
-updates      = widget.CheckUpdates(custom_command="/sbin/checkupdates", update_interval=60 * 30, foreground=yellow, colour_have_updates=text_color, display_format="Updates: {updates}")
-updates_aur  = widget.CheckUpdates(custom_command="/sbin/checkupdates-aur", update_interval=60 * 30, foreground=yellow, colour_have_updates=yellow, display_format="AUR: {updates}")
+updates      = widget.CheckUpdates(custom_command="/sbin/checkupdates",     update_interval=60 * 30, foreground=yellow, colour_have_updates=text_color, display_format="Updates: {updates}")
+updates_aur  = widget.CheckUpdates(custom_command="/sbin/checkupdates-aur", update_interval=60 * 30, foreground=yellow, colour_have_updates=yellow,     display_format="AUR: {updates}")
 memory_graph = widget.MemoryGraph( border_color=bg_color, graph_color=yellow, fill_color=yellow)
 cpu_graph    = widget.CPUGraph(border_color=bg_color, graph_color=blue,   fill_color=blue)
 net_graph    = widget.NetGraph(border_color=bg_color, graph_color=green,   fill_color=green)
@@ -356,23 +364,101 @@ prompt       = widget.Prompt()
 bar1 = bar.Bar([ widget.GroupBox(**groupbox_settings), widget.CurrentLayout(), prompt, spacer, chord, updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=bg_color)
 bar2 = bar.Bar([ widget.GroupBox(**groupbox_settings), widget.CurrentLayout(), prompt, spacer, chord, updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=bg_color)
 
-def add_tree_section(text: str):
-    notification("END: ", text)
-    # info = str(web_tree_layout.cmd_info())
-    # notification(info)
-    # notification(text)
+screens = [ Screen(bottom=bar1), Screen(bottom=bar2), ]
+# }}}
+# =============================== Custom Commands ========================== {{{
+class Callback(NamedTuple):
+    callback: Any
+    doc: str
+
+def find_web_layout():
+    global QTILE_INSTANCE
+    for group in QTILE_INSTANCE.groups:
+        if group.name == web_group.name:
+            return group.layout
+
+def add_web_section(args: list[str]):
+    layout = find_web_layout()
+    for arg in args:
+        layout.cmd_add_section(arg)
+
+def remove_web_section(args: list[str]):
+    layout = find_web_layout()
+    for arg in args:
+        layout.cmd_del_section(arg)
+
+
+command_map = {
+    "add": Callback(add_web_section, "add sections to web layout"),
+    "del": Callback(remove_web_section,"remove sections from web layout"),
+}
+
+def print_doc_string(args: list[str]):
+    if len(args) == 0:
+        notification("Expected command name", timeout= 2 * 60 * 1000)
+    for arg in args:
+        command = command_map.get(arg)
+        if command is not None:
+            notification(command.doc, timeout = 2 * 60 * 1000)
+        else:
+            notification("Unknown command '" + arg + "'", timeout = 2 * 60 * 1000)
+
+command_map["help"] = Callback(print_doc_string, "prints documentation of a command")
+
+def run_command(cmd_line: str):
+    cmd_split = cmd_line.split()
+    cmd = cmd_split[0]
+    args = cmd_split[1:]
+
+    callback = command_map.get(cmd)
+    if callback is not None:
+        callback.callback(args)
+    else:
+        notification("Unknown command '" + cmd + "'", timeout = 2 * 60 * 1000)
+
+class CustomCommandCompleter:
+    def __init__(self, qtile):
+        self.thisfinal: Optional[str] = None
+        self.lookup: Optional[List[Tuple[str, str]]] = None
+        self.offset = -1
+
+    def actual(self) -> Optional[str]:
+        return self.thisfinal
+
+    def reset(self) -> None:
+        self.lookup = None
+        self.offset = -1
+
+    def complete(self, txt: str) -> str:
+        txt = txt.lower()
+        if not self.lookup:
+            self.lookup = []
+            for cmd in command_map.keys():
+                if cmd.lower().startswith(txt):
+                    self.lookup.append((cmd, cmd))
+
+            self.lookup.sort()
+            self.offset = -1
+            self.lookup.append((txt, txt))
+
+        self.offset += 1
+        if self.offset >= len(self.lookup):
+            self.offset = 0
+        ret = self.lookup[self.offset]
+        self.thisfinal = ret[1]
+        return ret[0]
+
+prompt.completers["custom_command_completer"] = CustomCommandCompleter
 
 @lazy.function
-def my_funtion(qtile: Qtile):
-    # web_tree_layout.cmd_toscreen()
-    notification("NOTIFICATION")
-    # prompt.start_input("Add Section", add_tree_section)
+def run_custom_command(qtile: Qtile):
+    global QTILE_INSTANCE
+    QTILE_INSTANCE = qtile
+    prompt.start_input("cmd", run_command, "custom_command_completer")
 
 keys.extend([
-    Key([mod, "shift"], "i", my_funtion, desc="Does the thing")
+    Key([mod, "shift"], "i", run_custom_command, desc="Runs custom commands with prompted input")
 ])
-
-screens = [ Screen(bottom=bar1), Screen(bottom=bar2), ]
 # }}}
 # ============================== Floating Windows ========================== {{{
 mouse = [
