@@ -1,5 +1,6 @@
 #  ================================== Imports ============================== {{{
 from typing import List , Optional, Tuple # noqa: F401
+from enum import Enum
 
 from libqtile import bar, layout, widget, hook
 from libqtile.config import Click, Drag, Group, Key, Match, Screen, KeyChord
@@ -11,11 +12,10 @@ from libqtile.command.client import InteractiveCommandClient
 import subprocess
 import os
 from typing import NamedTuple, Any
-try:
-    from notify import notification
-except:
-    pass
 from libqtile.core.manager import Qtile
+from collections import deque
+# }}}
+#  ============================ Send Notifications ========================= {{{
 # }}}
 # =============================== Qtile Settings =========================== {{{
 auto_fullscreen            = True
@@ -359,12 +359,53 @@ cpu_graph    = widget.CPUGraph(border_color=bg_color, graph_color=blue,   fill_c
 net_graph    = widget.NetGraph(border_color=bg_color, graph_color=green,   fill_color=green)
 clock        = widget.Clock(format='%Y-%m-%d %a %I:%M %p')
 battery      = widget.Battery(format="{percent:2.0%} {char}", charge_char="", discharge_char="", low_foreground=red, foreground=green)
-prompt       = widget.Prompt()
+prompt       = widget.Prompt(cursor=False, background=yellow, foreground=bg_color, prompt='{prompt} ')
+text_box     = widget.TextBox()
 
-bar1 = bar.Bar([ widget.GroupBox(**groupbox_settings), widget.CurrentLayout(), prompt, spacer, chord, updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=bg_color)
-bar2 = bar.Bar([ widget.GroupBox(**groupbox_settings), widget.CurrentLayout(), prompt, spacer, chord, updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=bg_color)
+bar1 = bar.Bar([ widget.GroupBox(**groupbox_settings), widget.CurrentLayout(), prompt, spacer, chord, text_box, updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=bg_color)
+bar2 = bar.Bar([ widget.GroupBox(**groupbox_settings), widget.CurrentLayout(), prompt, spacer, chord, text_box, updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=bg_color)
 
 screens = [ Screen(bottom=bar1), Screen(bottom=bar2), ]
+# }}}
+# ================================ Notifications =========================== {{{
+class Urgency(Enum):
+    INFO  = 0
+    ERROR = 1
+
+class Notification:
+    def __init__(self, msg: str, urgency: Urgency, timeout: int):
+        self.msg     = msg
+        self.timeout = timeout
+        self.urgency = urgency
+
+notifications = deque()
+notifications_running = False
+
+def update_notifications():
+    global notifications_running
+    if len(notifications) != 0:
+        notification = notifications.popleft()
+        text_box.cmd_update(notification.msg)
+
+        # TODO the background colouring does not seem to work like this
+        if notification.urgency == Urgency.INFO:
+            text_box.background = yellow
+        elif notification.urgency == Urgency.ERROR:
+            text_box.background = red
+
+        text_box.timeout_add(notification.timeout, update_notifications)
+    else:
+        text_box.cmd_update("")
+        notifications_running = False
+
+def notify(msg: str, urgency: Urgency=Urgency.INFO, timeout = 2):
+    global notifications_running
+    notification = Notification(msg, urgency, timeout)
+    notifications.append(notification)
+    if not notifications_running:
+        notifications_running = True
+        update_notifications()
+
 # }}}
 # =============================== Custom Commands ========================== {{{
 class Callback(NamedTuple):
@@ -395,13 +436,13 @@ command_map = {
 
 def print_doc_string(args: list[str]):
     if len(args) == 0:
-        notification("Expected command name", timeout= 2 * 60 * 1000)
+        notify("Expected command name", Urgency.ERROR)
     for arg in args:
         command = command_map.get(arg)
         if command is not None:
-            notification(command.doc, timeout = 2 * 60 * 1000)
+            notify(command.doc, Urgency.INFO)
         else:
-            notification("Unknown command '" + arg + "'", timeout = 2 * 60 * 1000)
+            notify("Unknown command '" + arg + "'", Urgency.ERROR)
 
 command_map["help"] = Callback(print_doc_string, "prints documentation of a command")
 
@@ -414,7 +455,7 @@ def run_command(cmd_line: str):
     if callback is not None:
         callback.callback(args)
     else:
-        notification("Unknown command '" + cmd + "'", timeout = 2 * 60 * 1000)
+        notify("Unknown command '" + cmd + "'", Urgency.ERROR)
 
 class CustomCommandCompleter:
     def __init__(self, qtile):
@@ -454,7 +495,7 @@ prompt.completers["custom_command_completer"] = CustomCommandCompleter
 def run_custom_command(qtile: Qtile):
     global QTILE_INSTANCE
     QTILE_INSTANCE = qtile
-    prompt.start_input("cmd", run_command, "custom_command_completer")
+    prompt.start_input(">", run_command, "custom_command_completer")
 
 keys.extend([
     Key([mod, "shift"], "i", run_custom_command, desc="Runs custom commands with prompted input")
