@@ -392,6 +392,7 @@ screens = [ Screen(bottom=bar1), Screen(bottom=bar2), ]
 class Urgency(Enum):
     INFO  = 0
     ERROR = 1
+    WARN  = 2
 
 class Notification:
     def __init__(self, msg: str, urgency: Urgency, timeout: int):
@@ -415,6 +416,9 @@ def update_notifications():
                 text_box.foreground = ColorPallet.background
             elif notification.urgency == Urgency.ERROR:
                 text_box.background = ColorPallet.red
+                text_box.foreground = ColorPallet.text
+            elif notification.urgency == Urgency.WARN:
+                text_box.background = ColorPallet.orange
                 text_box.foreground = ColorPallet.text
 
             text_box.timeout_add(notification.timeout, update_notifications)
@@ -453,10 +457,31 @@ def remove_web_section(args: list[str]):
     for arg in args:
         layout.cmd_del_section(arg)
 
+def collapse_web_section(args: list[str]):
+    layout = find_web_layout()
+    layout.cmd_collapse_branch()
+
+def expand_web_section(args: list[str]):
+    layout = find_web_layout()
+    layout.cmd_expand_branch()
+
+def hide_web_tabs(args: list[str]):
+    layout = find_web_layout()
+    layout.hide()
+    notify("Not fully implemented", Urgency.WARN)
+
+def show_web_tabs(args: list[str]):
+    layout = find_web_layout()
+    layout._panel.unhide()
+    notify("Not fully implemented", Urgency.WARN)
 
 command_map = {
-    "add": Callback(add_web_section, "add sections to web layout"),
-    "del": Callback(remove_web_section,"remove sections from web layout"),
+    "add":  Callback(add_web_section,      "add sections to web layout"),
+    "del":  Callback(remove_web_section,   "remove sections from web layout"),
+    "col":  Callback(collapse_web_section, "collapse section"),
+    "exp":  Callback(expand_web_section,   "expand section"),
+    "hide": Callback(hide_web_tabs,        "hides web tabs"),
+    "show": Callback(show_web_tabs,        "shows web tabs"),
 }
 
 def print_doc_string(args: list[str]):
@@ -523,7 +548,9 @@ def run_custom_command(qtile: Qtile):
     prompt.start_input(">", run_command, "custom_command_completer")
 
 keys.extend([
-    Key([mod, "shift"], "i", run_custom_command, desc="Runs custom commands with prompted input")
+    Key([mod,], "o",      lazy.function(expand_web_section),   desc="Expand a web branch"),
+    Key([mod,], "x",      lazy.function(collapse_web_section), desc="Collapse a web branch"),
+    Key([mod,   "shift"], "i",                                 run_custom_command, desc="Runs custom commands with prompted input")
 ])
 # }}}
 # ============================== Floating Windows ========================== {{{
