@@ -23,7 +23,7 @@ auto_minimize              = True
 dgroups_key_binder         = None
 dgroups_app_rules          = []
 follow_mouse_focus         = True
-bring_front_click          = False
+bring_front_click          = True
 cursor_warp                = False
 wmname                     = "LG3D"
 # }}}
@@ -222,47 +222,71 @@ def autostart_always():
 # }}}
 # ==================================== Theme =============================== {{{
 # ----------------------------------- Colors ------------------------------ {{{{
-bg_color             = "#32302f"
-bg_color_transparent = "#ef2f343f"
-inactive_bg_color    = "#32302f"
-text_color           = "#ebdbb2"
-inactive_text_color  = "#929378"
-urgent_bg_color      = "#cc241d"
+class ColorPallet:
+    red           = "#cc241d" # urgent
+    red2          = "#fb4934"
 
-black                = "#282828"
-red                  = "#cc241d"
-green                = "#98971a"
-yellow               = "#d79921"
-blue                 = "#458588"
-magenta              = "#b16286"
-cyan                 = "#689d6a"
-white                = "#a89984"
+    green         = "#98971a"
+    green2        = "#b8bb26"
+
+    yellow        = "#d79921"
+    yellow2       = "#fabd2f"
+
+    blue          = "#458588"
+    blue2         = "#83a598"
+
+    purple        = "#b16286"
+    purple2       = "#d3869b"
+
+    aqua          = "#689d6a"
+    aqua2         = "#8ec07c"
+
+    orange        = "#d65d0e"
+    orange2       = "#fe8819"
+
+    bg0_s         = "#32302f"
+    bg0_h         = "#1d2021"
+    bg0           = "#282828"
+    bg1           = "#3c3836"
+    bg2           = "#504945"
+    bg3           = "#665c54"
+    bg4           = "#7c6f64"
+
+    fg0           = "#fbf1c7"
+    fg1           = "#ebdbb2"
+    fg2           = "#d5c4a1"
+    fg3           = "#bdae93"
+    fg4           = "#a89984"
+
+    background    = "#32302f"
+    text          = "#ebdbb2"
+    inactive_text = "#d5c4a1"
 # }}}}
 
 theme = {
     # Columns
-    "border_focus":        green,
-    "border_focus_stack":  blue,
-    "border_normal":       bg_color,
-    "border_normal_stack": bg_color,
+    "border_focus":        ColorPallet.green,
+    "border_focus_stack":  ColorPallet.blue,
+    "border_normal":       ColorPallet.bg0_s,
+    "border_normal_stack": ColorPallet.bg0_s,
     "margin":              margin,
     "border_width":        border_width,
     "grow_amount":         3*border_width,
     "margin_on_single":    0,
 
     # TreeTab
-    "active_bg":        green,
-    "active_fg":        text_color,
-    "bg_color":         bg_color,
-    "inactive_bg":      bg_color,
-    "urgent_fg":        red,
-    "urgent_bg":        bg_color,
+    "active_bg":        ColorPallet.green,
+    "active_fg":        ColorPallet.text,
+    "bg_color":         ColorPallet.background,
+    "inactive_bg":      ColorPallet.background,
+    "urgent_fg":        ColorPallet.red,
+    "urgent_bg":        ColorPallet.background,
     "panel_width":      150,
     "level_shift":      20,
     "font":             "Source Code Pro Bold",
-    "section_fg":       text_color,
+    "section_fg":       ColorPallet.text,
     "section_fontsize": 14,
-    "section_fg":       white,
+    "section_fg":       ColorPallet.fg4,
     "fontsize":         11,
 
 }
@@ -312,54 +336,55 @@ widget_defaults = dict(
     font='Source Code Pro bold',
     fontsize=12,
     padding=5,
-    foreground=text_color
+    foreground=ColorPallet.text
 )
 extension_defaults = widget_defaults.copy()
 
 groupbox_settings = {
-    "active": text_color,
+    "active": ColorPallet.text,
     "rounded": False,
-    "inactive": inactive_text_color,
+    "inactive": ColorPallet.inactive_text,
     "disable_drag": True,
     "hide_unused": False,
     "border_width": 0,
     # "block_highlight_text_color": green,
     "urgent_alert_method": 'block',
-    "urgent_text": green,
-    "urgent_border": red,
+    "urgent_text": ColorPallet.green,
+    "urgent_border": ColorPallet.red,
     # "background": yellow,
-    "highlight_color": green,
+    "highlight_color": ColorPallet.green,
     "highlight_method": "line",
     "margin_x": 0,
     "padding_x": 10,
 
     # inactive monitor active workspace shown on active monitor
-    "other_screen_border": green,
+    "other_screen_border": ColorPallet.green,
 
     # active monitor active workspace shown on active monitor
-    "this_current_screen_border": green,
+    "this_current_screen_border": ColorPallet.green,
 
     # active monitor active workspace shown on inactive monitor
-    "other_current_screen_border": bg_color,
+    "other_current_screen_border": ColorPallet.background,
 
     # Inactive monitor active workspace shown on inactive monitor
-    "this_screen_border": green,
+    "this_screen_border": ColorPallet.green,
 }
 
 spacer       = widget.Spacer()
-chord        = widget.Chord(background=red)
-updates      = widget.CheckUpdates(custom_command="/sbin/checkupdates",     update_interval=60 * 30, foreground=yellow, colour_have_updates=text_color, display_format="Updates: {updates}")
-updates_aur  = widget.CheckUpdates(custom_command="/sbin/checkupdates-aur", update_interval=60 * 30, foreground=yellow, colour_have_updates=yellow,     display_format="AUR: {updates}")
-memory_graph = widget.MemoryGraph( border_color=bg_color, graph_color=yellow, fill_color=yellow)
-cpu_graph    = widget.CPUGraph(border_color=bg_color, graph_color=blue,   fill_color=blue)
-net_graph    = widget.NetGraph(border_color=bg_color, graph_color=green,   fill_color=green)
-clock        = widget.Clock(format='%Y-%m-%d %a %I:%M %p')
-battery      = widget.Battery(format="{percent:2.0%} {char}", charge_char="", discharge_char="", low_foreground=red, foreground=green)
-prompt       = widget.Prompt(cursor=False, background=yellow, foreground=bg_color, prompt='{prompt} ')
-text_boxes   = [widget.TextBox() for i in range(2)]
+chord        = widget.Chord(background=ColorPallet.red)
+updates     = widget.CheckUpdates(custom_command="/sbin/checkupdates",     update_interval=60 * 30, foreground=ColorPallet.yellow, colour_have_updates=ColorPallet.text,   display_format="Updates: {updates}")
+updates_aur = widget.CheckUpdates(custom_command="/sbin/checkupdates-aur", update_interval=60 * 30, foreground=ColorPallet.yellow, colour_have_updates=ColorPallet.yellow, display_format="AUR: {updates}")
 
-bar1 = bar.Bar([ widget.GroupBox(**groupbox_settings), widget.CurrentLayout(), prompt, spacer, chord, text_boxes[0], updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=bg_color)
-bar2 = bar.Bar([ widget.GroupBox(**groupbox_settings), widget.CurrentLayout(), prompt, spacer, chord, text_boxes[1], updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=bg_color)
+memory_graph = widget.MemoryGraph(border_color=ColorPallet.background, graph_color=ColorPallet.yellow,     fill_color=ColorPallet.yellow)
+cpu_graph    = widget.CPUGraph(border_color=ColorPallet.background,    graph_color=ColorPallet.background, fill_color=ColorPallet.blue)
+net_graph    = widget.NetGraph(border_color=ColorPallet.background,    graph_color=ColorPallet.green,      fill_color=ColorPallet.green)
+clock        = widget.Clock(format='%Y-%m-%d %a %I:%M %p')
+battery      = widget.Battery(format="{percent:2.0%} {char}",          charge_char="",                    discharge_char="",                low_foreground=ColorPallet.red, foreground=ColorPallet.green)
+prompt       = widget.Prompt(cursor=False,                             background=ColorPallet.yellow,      foreground=ColorPallet.background, prompt='{prompt} ')
+text_boxes = [widget.TextBox() for i in range(2)]
+
+bar1 = bar.Bar([ widget.GroupBox(**groupbox_settings), widget.CurrentLayout(), prompt, spacer, chord, text_boxes[0], updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=ColorPallet.background)
+bar2 = bar.Bar([ widget.GroupBox(**groupbox_settings), widget.CurrentLayout(), prompt, spacer, chord, text_boxes[1], updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=ColorPallet.background)
 
 screens = [ Screen(bottom=bar1), Screen(bottom=bar2), ]
 # }}}
@@ -386,11 +411,11 @@ def update_notifications():
 
             # TODO the background colours don't display on all bars
             if notification.urgency == Urgency.INFO:
-                text_box.background = yellow
-                text_box.foreground = bg_color
+                text_box.background = ColorPallet.yellow
+                text_box.foreground = ColorPallet.background
             elif notification.urgency == Urgency.ERROR:
-                text_box.background = red
-                text_box.foreground = text_color
+                text_box.background = ColorPallet.red
+                text_box.foreground = ColorPallet.text
 
             text_box.timeout_add(notification.timeout, update_notifications)
     else:
