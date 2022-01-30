@@ -15,8 +15,6 @@ from typing import NamedTuple, Any
 from libqtile.core.manager import Qtile
 from collections import deque
 # }}}
-#  ============================ Send Notifications ========================= {{{
-# }}}
 # =============================== Qtile Settings =========================== {{{
 auto_fullscreen            = True
 focus_on_window_activation = "smart"
@@ -254,7 +252,7 @@ theme = {
 
     # TreeTab
     "active_bg":        green,
-    "active_fg":        bg_color,
+    "active_fg":        text_color,
     "bg_color":         bg_color,
     "inactive_bg":      bg_color,
     "urgent_fg":        red,
@@ -278,8 +276,6 @@ layouts = [
 
 web_tree_layout = layout.TreeTab(sections=["General", "Code"], **theme)
 chats_layout    = layout.Tile(**theme)
-
-# Special layouts
 # }}}
 # ================================= Workspaces ============================= {{{
 # ---------------------------------- Defaults ----------------------------- {{{{
@@ -311,7 +307,7 @@ for i in range(len(groups)):
         Key([mod, "control"], key, lazy.window.togroup(groups[i].name, switch_group=True), desc="Switch to & move focused window to group {}".format(groups[i].name)),
     ])
 # }}}
-# =================================== Screens ============================== {{{
+# =================================== Widgets ============================== {{{
 widget_defaults = dict(
     font='Source Code Pro bold',
     fontsize=12,
@@ -338,7 +334,7 @@ groupbox_settings = {
     "padding_x": 10,
 
     # inactive monitor active workspace shown on active monitor
-    "other_screen_border": bg_color,
+    "other_screen_border": green,
 
     # active monitor active workspace shown on active monitor
     "this_current_screen_border": green,
@@ -347,7 +343,7 @@ groupbox_settings = {
     "other_current_screen_border": bg_color,
 
     # Inactive monitor active workspace shown on inactive monitor
-    "this_screen_border": bg_color,
+    "this_screen_border": green,
 }
 
 spacer       = widget.Spacer()
@@ -360,10 +356,10 @@ net_graph    = widget.NetGraph(border_color=bg_color, graph_color=green,   fill_
 clock        = widget.Clock(format='%Y-%m-%d %a %I:%M %p')
 battery      = widget.Battery(format="{percent:2.0%} {char}", charge_char="", discharge_char="", low_foreground=red, foreground=green)
 prompt       = widget.Prompt(cursor=False, background=yellow, foreground=bg_color, prompt='{prompt} ')
-text_box     = widget.TextBox()
+text_boxes   = [widget.TextBox() for i in range(2)]
 
-bar1 = bar.Bar([ widget.GroupBox(**groupbox_settings), widget.CurrentLayout(), prompt, spacer, chord, text_box, updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=bg_color)
-bar2 = bar.Bar([ widget.GroupBox(**groupbox_settings), widget.CurrentLayout(), prompt, spacer, chord, text_box, updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=bg_color)
+bar1 = bar.Bar([ widget.GroupBox(**groupbox_settings), widget.CurrentLayout(), prompt, spacer, chord, text_boxes[0], updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=bg_color)
+bar2 = bar.Bar([ widget.GroupBox(**groupbox_settings), widget.CurrentLayout(), prompt, spacer, chord, text_boxes[1], updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=bg_color)
 
 screens = [ Screen(bottom=bar1), Screen(bottom=bar2), ]
 # }}}
@@ -385,17 +381,21 @@ def update_notifications():
     global notifications_running
     if len(notifications) != 0:
         notification = notifications.popleft()
-        text_box.cmd_update(notification.msg)
+        for text_box in text_boxes:
+            text_box.cmd_update(notification.msg)
 
-        # TODO the background colouring does not seem to work like this
-        if notification.urgency == Urgency.INFO:
-            text_box.background = yellow
-        elif notification.urgency == Urgency.ERROR:
-            text_box.background = red
+            # TODO the background colours don't display on all bars
+            if notification.urgency == Urgency.INFO:
+                text_box.background = yellow
+                text_box.foreground = bg_color
+            elif notification.urgency == Urgency.ERROR:
+                text_box.background = red
+                text_box.foreground = text_color
 
-        text_box.timeout_add(notification.timeout, update_notifications)
+            text_box.timeout_add(notification.timeout, update_notifications)
     else:
-        text_box.cmd_update("")
+        for text_box in text_boxes:
+            text_box.cmd_update("")
         notifications_running = False
 
 def notify(msg: str, urgency: Urgency=Urgency.INFO, timeout = 2):
