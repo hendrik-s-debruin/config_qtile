@@ -72,8 +72,8 @@ keys = [
 
     # Resize
     KeyChord([mod], "r", [
-            Key([], "g", lazy.layout.increase_ratio(),  desc="Grow window"),
-            Key([], "s", lazy.layout.decrease_ratio(), desc="Shrink window"),
+            Key([], "g", lazy.layout.increase_ratio(), lazy.layout.grow(),  desc="Grow window"),
+            Key([], "s", lazy.layout.decrease_ratio(), lazy.layout.shrink(), desc="Shrink window"),
             Key([], "n", lazy.layout.normalize(),      desc="Normalize window"),
             Key([], "m", lazy.layout.maximize(),       desc="Maximize window"),
             Key([], "h", lazy.layout.grow_left(),      desc="Grow window to the left"),
@@ -296,6 +296,7 @@ theme = {
 layouts = [
     layout.Columns(**theme),
     layout.Max(),
+    layout.MonadTall(**theme),
 ]
 
 web_tree_layout = layout.TreeTab(sections=["General", "Code"], **theme)
