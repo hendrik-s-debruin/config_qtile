@@ -207,6 +207,9 @@ keys = [
     # ----------------------------- Qtile Commands ------------------------ {{{{
     Key([mod, "shift"], "r", lazy.reload_config(), desc="Reload the config"),
     # }}}}
+    # ---------------------------------- Dunst ---------------------------- {{{{
+    Key([mod], "n", lazy.spawn("dunstctl close"), desc="Close notification"),
+    # }}}}
 ]
 # }}}
 # =========================== Auto Start Applications ====================== {{{
@@ -296,7 +299,6 @@ theme = {
 layouts = [
     layout.Columns(**theme),
     layout.Max(),
-    layout.MonadTall(**theme),
 ]
 
 web_tree_layout = layout.TreeTab(sections=["General", "Code"], **theme)
