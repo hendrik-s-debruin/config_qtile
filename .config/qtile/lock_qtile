@@ -1,6 +1,8 @@
 #!/bin/env bash
 
 killall unclutter
+dunstctl set-paused true
 ~/bin/secure
 i3lock-fancy-dualmonitor
 unclutter -grab -idle 1 -root &
+dunstctl set-paused false
