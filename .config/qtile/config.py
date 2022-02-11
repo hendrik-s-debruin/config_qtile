@@ -95,9 +95,9 @@ keys = [
     # }}}}
     # ------------------------------- Screenshots ------------------------- {{{{
     KeyChord([mod, "shift"], "p", [
-            Key([], "a", lazy.spawn(config_dir + "/screenshot active"),  desc="Take a screenshot of the active window"),
-            Key([], "s", lazy.spawn(config_dir + "/screenshot section"), desc="Take a screenshot of a section of the screen"),
-            Key([], "f", lazy.spawn(config_dir + "/screenshot full"),    desc="Take a screenshot of the entire desktop"),
+            Key([], "a", lazy.spawn(config_dir + "/screenshot active"),  lazy.ungrab_all_chords(), desc="Take a screenshot of the active window"),
+            Key([], "s", lazy.spawn(config_dir + "/screenshot section"), lazy.ungrab_all_chords(), desc="Take a screenshot of a section of the screen"),
+            Key([], "f", lazy.spawn(config_dir + "/screenshot full"),    lazy.ungrab_all_chords(), desc="Take a screenshot of the entire desktop"),
         ],
         mode="Screenshot [A]ctive [S]ection [F]ull"
     ),
@@ -105,16 +105,16 @@ keys = [
     # ----------------------------- Record Desktop ------------------------ {{{{
     KeyChord([mod, "shift"], "d", [
             # record
-            Key([], "a", lazy.spawn("record_active_window"), desc="Record active window"),
-            Key([], "f", lazy.spawn("record_full_desktop"),  desc="Record full desktop"),
+            Key([], "a", lazy.spawn("record_active_window"), lazy.ungrab_all_chords(), desc="Record active window"),
+            Key([], "f", lazy.spawn("record_full_desktop"),  lazy.ungrab_all_chords(), desc="Record full desktop"),
 
             # pause/resume
-            Key([], "p", lazy.spawn("killalll recordmydesktop --signal SIGUSR1"), desc="Pause recording"),
-            Key([], "r", lazy.spawn("killalll recordmydesktop --signal SIGUSR1"), desc="Resume recording"),
+            Key([], "p", lazy.spawn("killalll recordmydesktop --signal SIGUSR1"), lazy.ungrab_all_chords(), desc="Pause recording"),
+            Key([], "r", lazy.spawn("killalll recordmydesktop --signal SIGUSR1"), lazy.ungrab_all_chords(), desc="Resume recording"),
 
             # stop/abort
-            Key([], "c", lazy.spawn("killalll recordmydesktop --signal SIGABRT"), desc="Abort recording"),
-            Key([], "s", lazy.spawn("killalll recordmydesktop --signal SIGTERM"), desc="Finish recording"),
+            Key([], "c", lazy.spawn("killalll recordmydesktop --signal SIGABRT"), lazy.ungrab_all_chords(), desc="Abort recording"),
+            Key([], "s", lazy.spawn("killalll recordmydesktop --signal SIGTERM"), lazy.ungrab_all_chords(), desc="Finish recording"),
         ],
         mode="Record Desktop [A]active [F]ull [P]ause [R]esume [C]ancel [S]top"
     ),
@@ -158,12 +158,12 @@ keys = [
     # }}}}
     # ----------------------------- Keyboard Layout ----------------------- {{{{
     KeyChord([mod], "q", [
-            Key([], "l", lazy.spawn("fcitx-remote -s fcitx-keyboard-us-intl"), desc="Switch to Latin keybord layout"),
-            Key([], "c", lazy.spawn("fcitx-remote -s pinyin"),                 desc="Switch to Chinese keybord layout"),
-            Key([], "r", lazy.spawn("fcitx-remote -s fcitx-keyboard-ru"),      desc="Switch to Russian keybord layout"),
-            Key([], "u", lazy.spawn("fcitx-remote -s fcitx-keyboard-us"),      desc="Switch to English keybord layout"),
-            Key([], "g", lazy.spawn("fcitx-remote -s fcitx-keyboard-gr"),      desc="Switch to Greek keybord layout"),
-            Key([], "k", lazy.spawn("fcitx-remote -s hangul"),                 desc="Switch to Korean keybord layout"),
+            Key([], "l", lazy.spawn("fcitx-remote -s fcitx-keyboard-us-intl"), lazy.ungrab_all_chords(), desc="Switch to Latin keybord layout"),
+            Key([], "c", lazy.spawn("fcitx-remote -s pinyin"),                 lazy.ungrab_all_chords(), desc="Switch to Chinese keybord layout"),
+            Key([], "r", lazy.spawn("fcitx-remote -s fcitx-keyboard-ru"),      lazy.ungrab_all_chords(), desc="Switch to Russian keybord layout"),
+            Key([], "u", lazy.spawn("fcitx-remote -s fcitx-keyboard-us"),      lazy.ungrab_all_chords(), desc="Switch to English keybord layout"),
+            Key([], "g", lazy.spawn("fcitx-remote -s fcitx-keyboard-gr"),      lazy.ungrab_all_chords(), desc="Switch to Greek keybord layout"),
+            Key([], "k", lazy.spawn("fcitx-remote -s hangul"),                 lazy.ungrab_all_chords(), desc="Switch to Korean keybord layout"),
         ],
         mode="Keyboard Layout [U]s [L]atin [C]hinese [R]ussian [G]reek [K]orean"
     ),
@@ -191,11 +191,11 @@ keys = [
     # }}}}
     # -------------------------- Multi Monitor Layout --------------------- {{{{
     KeyChord([mod, "shift"], "s", [
-            Key([], "m", lazy.spawn("mirrorscreen"),     desc="Mirror monitors"),
-            Key([], "l", lazy.spawn("dualscreen_left"),  desc="External monitor on left"),
-            Key([], "r", lazy.spawn("dualscreen_right"), desc="External monitor on right"),
-            Key([], "s", lazy.spawn("singlescreen"),     desc="Only built-in monitor"),
-            Key([], "o", lazy.spawn("otherscreen"),      desc="Only external monitor"),
+            Key([], "m", lazy.spawn("mirrorscreen"),     lazy.ungrab_all_chords(), desc="Mirror monitors"),
+            Key([], "l", lazy.spawn("dualscreen_left"),  lazy.ungrab_all_chords(), desc="External monitor on left"),
+            Key([], "r", lazy.spawn("dualscreen_right"), lazy.ungrab_all_chords(), desc="External monitor on right"),
+            Key([], "s", lazy.spawn("singlescreen"),     lazy.ungrab_all_chords(), desc="Only built-in monitor"),
+            Key([], "o", lazy.spawn("otherscreen"),      lazy.ungrab_all_chords(), desc="Only external monitor"),
         ],
         mode="Multi Monitor [M]irror [L]eft [R]ight [S]ingle [O]ther"
     ),
