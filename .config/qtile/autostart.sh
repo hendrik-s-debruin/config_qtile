@@ -14,9 +14,10 @@ dunst &
 
 # Tools
 udiskie &
-fcitx &
-xmod ~/.Xmodmap &
 
 # Music
 spotblock &
 spotify &
+
+# Keyboard bindings
+[[ -f ~/.Xmodmap ]] && xmodmap ~/.Xmodmap

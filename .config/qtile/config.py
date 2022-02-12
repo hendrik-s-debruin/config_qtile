@@ -158,12 +158,12 @@ keys = [
     # }}}}
     # ----------------------------- Keyboard Layout ----------------------- {{{{
     KeyChord([mod], "q", [
-            Key([], "l", lazy.spawn("fcitx-remote -s fcitx-keyboard-us-intl"), lazy.ungrab_all_chords(), desc="Switch to Latin keybord layout"),
-            Key([], "c", lazy.spawn("fcitx-remote -s pinyin"),                 lazy.ungrab_all_chords(), desc="Switch to Chinese keybord layout"),
-            Key([], "r", lazy.spawn("fcitx-remote -s fcitx-keyboard-ru"),      lazy.ungrab_all_chords(), desc="Switch to Russian keybord layout"),
-            Key([], "u", lazy.spawn("fcitx-remote -s fcitx-keyboard-us"),      lazy.ungrab_all_chords(), desc="Switch to English keybord layout"),
-            Key([], "g", lazy.spawn("fcitx-remote -s fcitx-keyboard-gr"),      lazy.ungrab_all_chords(), desc="Switch to Greek keybord layout"),
-            Key([], "k", lazy.spawn("fcitx-remote -s hangul"),                 lazy.ungrab_all_chords(), desc="Switch to Korean keybord layout"),
+            Key([], "l", lazy.spawn(f"{config_dir}/keyboard_layout latin"),   lazy.ungrab_all_chords(), desc="Switch to Latin keybord layout"),
+            Key([], "c", lazy.spawn(f"{config_dir}/keyboard_layout chinese"), lazy.ungrab_all_chords(), desc="Switch to Chinese keybord layout"),
+            Key([], "r", lazy.spawn(f"{config_dir}/keyboard_layout russian"), lazy.ungrab_all_chords(), desc="Switch to Russian keybord layout"),
+            Key([], "u", lazy.spawn(f"{config_dir}/keyboard_layout us"),      lazy.ungrab_all_chords(), desc="Switch to English keybord layout"),
+            Key([], "g", lazy.spawn(f"{config_dir}/keyboard_layout greek"),   lazy.ungrab_all_chords(), desc="Switch to Greek keybord layout"),
+            Key([], "k", lazy.spawn(f"{config_dir}/keyboard_layout korean"),  lazy.ungrab_all_chords(), desc="Switch to Korean keybord layout"),
         ],
         mode="Keyboard Layout [U]s [L]atin [C]hinese [R]ussian [G]reek [K]orean"
     ),
@@ -373,8 +373,8 @@ groupbox_settings = {
     "this_screen_border": ColorPallet.green,
 }
 
-spacer       = widget.Spacer()
-chord        = widget.Chord(background=ColorPallet.red)
+spacer      = widget.Spacer()
+chord       = widget.Chord(background=ColorPallet.red)
 updates     = widget.CheckUpdates(custom_command="/sbin/checkupdates",     update_interval=60 * 30, foreground=ColorPallet.yellow, colour_have_updates=ColorPallet.text,   display_format="Updates: {updates}")
 updates_aur = widget.CheckUpdates(custom_command="/sbin/checkupdates-aur", update_interval=60 * 30, foreground=ColorPallet.yellow, colour_have_updates=ColorPallet.yellow, display_format="AUR: {updates}")
 
@@ -384,10 +384,10 @@ net_graph    = widget.NetGraph(border_color=ColorPallet.background,    graph_col
 clock        = widget.Clock(format='%Y-%m-%d %a %I:%M %p')
 battery      = widget.Battery(format="{percent:2.0%} {char}",          charge_char="",                    discharge_char="",                low_foreground=ColorPallet.red, foreground=ColorPallet.green)
 prompt       = widget.Prompt(cursor=False,                             background=ColorPallet.yellow,      foreground=ColorPallet.background, prompt='{prompt} ')
-text_boxes = [widget.TextBox() for i in range(2)]
+text_boxes   = [widget.TextBox() for i in range(2)]
 
-bar1 = bar.Bar([ widget.GroupBox(**groupbox_settings), widget.CurrentLayout(), prompt, spacer, chord, text_boxes[0], updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=ColorPallet.background)
-bar2 = bar.Bar([ widget.GroupBox(**groupbox_settings), widget.CurrentLayout(), prompt, spacer, chord, text_boxes[1], updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=ColorPallet.background)
+bar1 = bar.Bar([widget.GroupBox(**groupbox_settings), widget.CurrentLayout(), prompt, spacer, chord, text_boxes[0], updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=ColorPallet.background)
+bar2 = bar.Bar([widget.GroupBox(**groupbox_settings), widget.CurrentLayout(), prompt, spacer, chord, text_boxes[1], updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=ColorPallet.background)
 
 screens = [ Screen(bottom=bar1), Screen(bottom=bar2), ]
 # }}}

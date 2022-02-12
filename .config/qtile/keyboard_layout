@@ -1,0 +1,34 @@
+#!/bin/env bash
+
+case $1 in
+	latin)
+		setxkbmap -layout us -variant intl
+		;;
+	us)
+		setxkbmap -layout us
+		;;
+	russian)
+		notify-send --urgency=critical "Russian does not currently work with Qtile"
+		exit 1
+		# setxkbmap -layout ru,us
+		;;
+	greek)
+		notify-send --urgency=critical "Greek does not currently work with Qtile"
+		exit 1
+		# setxkbmap -layout gr,us
+		;;
+	chinese)
+		notify-send --urgency=critical "Chinese is not implemented"
+		exit 1
+		;;
+	korean)
+		notify-send --urgency=critical "Korean is not implemented"
+		exit 1
+		;;
+	*)
+		echo Error: unknown layout
+		exit 1
+		;;
+esac
+
+[ -f ~/.Xmodmap ] && xmodmap ~/.Xmodmap
