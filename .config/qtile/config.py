@@ -148,8 +148,8 @@ keys = [
     Key([],        "XF86AudioMute",        lazy.spawn("amixer set Master toggle"), desc="Toggle mute"),
     # }}}}
     # ---------------------------- Launch Programmes ---------------------- {{{{
-    Key([mod], "d",             lazy.spawn("rofi -combi-modi drun,run -show combi"), desc="Launch a programme"),
-    Key([mod], "t",             lazy.spawn("rofi -show window"),                     desc="Jump to a window"),
+    Key([mod], "d",             lazy.spawn("rofi -monitor -1 -combi-modi drun,run -show combi"), desc="Launch a programme"),
+    Key([mod], "t",             lazy.spawn("rofi -monitor -1 -show window"),                     desc="Jump to a window"),
     Key([mod,  "control"], "f", lazy.spawn("alacritty -e ranger"),                   desc="Open ranger"),
     Key([mod], "m",             lazy.spawn("unclutter -grab -idle 1 -root &"),       desc="Hide the mouse"),
     Key([mod, "shift"], "m",    lazy.spawn("killall unclutter"),                     desc="Show the mouse"),
