@@ -516,16 +516,20 @@ def unbind_workspace(args: list[str]):
     global QTILE_INSTANCE
     group_to_screen_binds.pop(QTILE_INSTANCE.current_group.name, None)
 
+def unbind_all(args: list[str]):
+    global group_to_screen_binds
+    group_to_screen_binds = {}
 
 command_map = {
-    "add":  Callback(add_web_section,      "add sections to web layout"),
-    "del":  Callback(remove_web_section,   "remove sections from web layout"),
-    "col":  Callback(collapse_web_section, "collapse section"),
-    "exp":  Callback(expand_web_section,   "expand section"),
-    "hide": Callback(hide_web_tabs,        "hides web tabs"),
-    "show": Callback(show_web_tabs,        "shows web tabs"),
-    "bind": Callback(bind_layout_to_screen,"binds current layout to current screen"),
-    "unbind": Callback(unbind_workspace, "removes bindings on workspace"),
+    "add":       Callback(add_web_section,      "add sections to web layout"),
+    "del":       Callback(remove_web_section,   "remove sections from web layout"),
+    "col":       Callback(collapse_web_section, "collapse section"),
+    "exp":       Callback(expand_web_section,   "expand section"),
+    "hide":      Callback(hide_web_tabs,        "hides web tabs"),
+    "show":      Callback(show_web_tabs,        "shows web tabs"),
+    "bind":      Callback(bind_layout_to_screen,"binds current layout to current screen"),
+    "unbind":    Callback(unbind_workspace,     "removes bindings on workspace"),
+    "unbindall": Callback(unbind_all,           "removes bindings on all workspaces"),
 }
 
 def print_doc_string(args: list[str]):
