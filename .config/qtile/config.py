@@ -14,6 +14,8 @@ import os
 from typing import NamedTuple, Any
 from libqtile.core.manager import Qtile
 from collections import deque
+from notify import notification
+from typing import Dict
 # }}}
 # =============================== Qtile Settings =========================== {{{
 auto_fullscreen            = True
@@ -316,6 +318,22 @@ media_matches = [
     Match(title=["Spotify"]) # TODO this should probably be done through a hook
 ]
 # }}}}
+
+# If a group is bound to a screen the binding is reported here. If it is not
+# here, the group can be displayed on any screen
+group_to_screen_binds: Dict[str, int] = {}
+
+@lazy.function
+def move_group_to_screen(qtile: Qtile, group: str):
+    # TODO when calling cmd_toscreen, if the group is on another screen, then
+    # the groups on those screens are swapped. This ignores the bind that was
+    # set here. Adda  check for this case and find some resolution to this
+    # problem
+    for idx in range(len(qtile.groups)):
+        if qtile.groups[idx].name == group:
+            qtile.groups[idx].cmd_toscreen(group_to_screen_binds.get(group))
+            return
+
 web_group = Group("", layouts=[web_tree_layout])
 groups = [
     Group(""),
@@ -329,7 +347,7 @@ groups = [
 for i in range(len(groups)):
     key = str(i + 1)
     keys.extend([
-        Key([mod],            key, lazy.group[groups[i].name].toscreen(),                  desc="Switch to group {}".format(groups[i].name)),
+        Key([mod],            key, move_group_to_screen(groups[i].name),                   desc="Switch to group {}".format(groups[i].name)),
         Key([mod, "shift"],   key, lazy.window.togroup(groups[i].name),                    desc="Switch to & move focused window to group {}".format(groups[i].name)),
         Key([mod, "control"], key, lazy.window.togroup(groups[i].name, switch_group=True), desc="Switch to & move focused window to group {}".format(groups[i].name)),
     ])
@@ -478,6 +496,27 @@ def show_web_tabs(args: list[str]):
     layout._panel.unhide()
     notify("Not fully implemented", Urgency.WARN)
 
+def bind_layout_to_screen(args: list[str]):
+    global QTILE_INSTANCE
+
+    try:
+        screen_idx = QTILE_INSTANCE.screens.index(QTILE_INSTANCE.current_screen)
+    except:
+        # This should never happen
+        notification("Error tyring to find screen")
+        return
+
+    notification("set binding")
+    group_to_screen_binds[QTILE_INSTANCE.current_group.name] = screen_idx
+
+    notification(f"current screen id: {screen_idx}")
+    notification(f"current_group: {QTILE_INSTANCE.current_group.name}")
+
+def unbind_workspace(args: list[str]):
+    global QTILE_INSTANCE
+    group_to_screen_binds.pop(QTILE_INSTANCE.current_group.name, None)
+
+
 command_map = {
     "add":  Callback(add_web_section,      "add sections to web layout"),
     "del":  Callback(remove_web_section,   "remove sections from web layout"),
@@ -485,6 +524,8 @@ command_map = {
     "exp":  Callback(expand_web_section,   "expand section"),
     "hide": Callback(hide_web_tabs,        "hides web tabs"),
     "show": Callback(show_web_tabs,        "shows web tabs"),
+    "bind": Callback(bind_layout_to_screen,"binds current layout to current screen"),
+    "unbind": Callback(unbind_workspace, "removes bindings on workspace"),
 }
 
 def print_doc_string(args: list[str]):
