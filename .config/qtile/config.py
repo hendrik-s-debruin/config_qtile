@@ -503,14 +503,10 @@ def bind_layout_to_screen(args: list[str]):
         screen_idx = QTILE_INSTANCE.screens.index(QTILE_INSTANCE.current_screen)
     except:
         # This should never happen
-        notification("Error tyring to find screen")
+        notification("Error tyring to find screen", timeout=0)
         return
 
-    notification("set binding")
     group_to_screen_binds[QTILE_INSTANCE.current_group.name] = screen_idx
-
-    notification(f"current screen id: {screen_idx}")
-    notification(f"current_group: {QTILE_INSTANCE.current_group.name}")
 
 def unbind_workspace(args: list[str]):
     global QTILE_INSTANCE
@@ -519,6 +515,15 @@ def unbind_workspace(args: list[str]):
 def unbind_all(args: list[str]):
     global group_to_screen_binds
     group_to_screen_binds = {}
+
+def bind_list(args: list[str]):
+    global group_to_screen_binds
+    msg = ""
+    for k, v in group_to_screen_binds.items():
+        msg = msg + "{}: {}".format(k, v) + "\n"
+    if msg != "":
+        msg = "Screen bindings:\n" + msg
+        notification(msg, timeout=0)
 
 command_map = {
     "add":       Callback(add_web_section,      "add sections to web layout"),
@@ -530,6 +535,7 @@ command_map = {
     "bind":      Callback(bind_layout_to_screen,"binds current layout to current screen"),
     "unbind":    Callback(unbind_workspace,     "removes bindings on workspace"),
     "unbindall": Callback(unbind_all,           "removes bindings on all workspaces"),
+    "bindlist":  Callback(bind_list,            "list all screen bindings in a notification"),
 }
 
 def print_doc_string(args: list[str]):
