@@ -319,7 +319,7 @@ media_matches = [
 web_group = Group("", layouts=[web_tree_layout])
 groups = [
     Group(""),
-    Group(""),
+    Group(""),
     web_group,
     Group("", layouts=[chats_layout, layout.Max()], matches=chat_matches),
     Group(""),
