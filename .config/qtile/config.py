@@ -35,6 +35,7 @@ terminal             = guess_terminal()
 border_width         = 2
 margin               = 10
 config_dir           = os.path.expanduser("~/.config/qtile")
+notify_send_settings = {"timeout": 0, "app_name": "qtile"}
 # }}}
 # ================================ Key Bindings ============================ {{{
 @lazy.function
@@ -319,9 +320,26 @@ media_matches = [
 ]
 # }}}}
 
+
+general_group = Group("")
+code_group = Group("")
+web_group = Group("", layouts=[web_tree_layout])
+chat_group = Group("", layouts=[chats_layout, layout.Max()], matches=chat_matches)
+game_group = Group("")
+media_group = Group("", matches=media_matches)
+
+groups = [
+    general_group,
+    code_group,
+    web_group,
+    chat_group,
+    game_group,
+    media_group,
+]
+
 # If a group is bound to a screen the binding is reported here. If it is not
 # here, the group can be displayed on any screen
-group_to_screen_binds: Dict[str, int] = {}
+group_to_screen_binds: Dict[str, int] = {media_group.name: 0, chat_group.name: 0}
 
 @lazy.function
 def move_group_to_screen(qtile: Qtile, group: str):
@@ -333,16 +351,6 @@ def move_group_to_screen(qtile: Qtile, group: str):
         if qtile.groups[idx].name == group:
             qtile.groups[idx].cmd_toscreen(group_to_screen_binds.get(group))
             return
-
-web_group = Group("", layouts=[web_tree_layout])
-groups = [
-    Group(""),
-    Group(""),
-    web_group,
-    Group("", layouts=[chats_layout, layout.Max()], matches=chat_matches),
-    Group(""),
-    Group("", matches=media_matches),
-]
 
 for i in range(len(groups)):
     key = str(i + 1)
@@ -503,7 +511,7 @@ def bind_layout_to_screen(args: list[str]):
         screen_idx = QTILE_INSTANCE.screens.index(QTILE_INSTANCE.current_screen)
     except:
         # This should never happen
-        notification("Error tyring to find screen", timeout=0)
+        notification("Error tyring to find screen", **notify_send_settings)
         return
 
     group_to_screen_binds[QTILE_INSTANCE.current_group.name] = screen_idx
@@ -523,7 +531,7 @@ def bind_list(args: list[str]):
         msg = msg + "{}: {}".format(k, v) + "\n"
     if msg != "":
         msg = "Screen bindings:\n" + msg
-        notification(msg, timeout=0)
+        notification(msg, **notify_send_settings)
 
 command_map = {
     "add":       Callback(add_web_section,      "add sections to web layout"),
