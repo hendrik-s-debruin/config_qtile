@@ -399,7 +399,6 @@ groupbox_settings = {
     "this_screen_border": ColorPallet.green,
 }
 
-spacer      = widget.Spacer()
 chord       = widget.Chord(background=ColorPallet.red)
 updates     = widget.CheckUpdates(custom_command="/sbin/checkupdates",     update_interval=60 * 5, foreground=ColorPallet.yellow, colour_have_updates=ColorPallet.text,   display_format="Updates: {updates}")
 updates_aur = widget.CheckUpdates(custom_command="/sbin/checkupdates-aur", update_interval=60 * 5, foreground=ColorPallet.yellow, colour_have_updates=ColorPallet.yellow, display_format="AUR: {updates}")
@@ -412,8 +411,8 @@ battery      = widget.Battery(format="{percent:2.0%} {char}",          charge_ch
 prompt       = widget.Prompt(cursor=False,                             background=ColorPallet.yellow,      foreground=ColorPallet.background, prompt='{prompt} ')
 text_boxes   = [widget.TextBox() for i in range(2)]
 
-bar1 = bar.Bar([widget.GroupBox(**groupbox_settings, fontsize=20), widget.CurrentLayout(), prompt, spacer, chord, text_boxes[0], updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=ColorPallet.background)
-bar2 = bar.Bar([widget.GroupBox(**groupbox_settings, fontsize=20), widget.CurrentLayout(), prompt, spacer, chord, text_boxes[1], updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=ColorPallet.background)
+bar1 = bar.Bar([widget.GroupBox(**groupbox_settings, fontsize=20), widget.CurrentLayout(), prompt, widget.Spacer(), chord, text_boxes[0], updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=ColorPallet.background)
+bar2 = bar.Bar([widget.GroupBox(**groupbox_settings, fontsize=20), widget.CurrentLayout(), prompt, widget.Spacer(), chord, text_boxes[1], updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=ColorPallet.background)
 
 screens = [ Screen(bottom=bar1), Screen(bottom=bar2), ]
 # }}}
