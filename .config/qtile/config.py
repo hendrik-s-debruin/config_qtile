@@ -323,7 +323,7 @@ media_matches = [
 
 general_group = Group("")
 code_group = Group("")
-web_group = Group("", layouts=[web_tree_layout])
+web_group = Group("", layouts=[web_tree_layout, layout.Max()])
 chat_group = Group("", layouts=[chats_layout, layout.Max()], matches=chat_matches)
 game_group = Group("")
 media_group = Group("", matches=media_matches)
