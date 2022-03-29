@@ -197,10 +197,11 @@ keys = [
             Key([], "m", lazy.spawn("mirrorscreen"),     lazy.ungrab_all_chords(), desc="Mirror monitors"),
             Key([], "l", lazy.spawn("dualscreen_left"),  lazy.ungrab_all_chords(), desc="External monitor on left"),
             Key([], "r", lazy.spawn("dualscreen_right"), lazy.ungrab_all_chords(), desc="External monitor on right"),
+            Key([], "a", lazy.spawn("dualscreen_above"), lazy.ungrab_all_chords(), desc="External monitor above primary monitor"),
             Key([], "s", lazy.spawn("singlescreen"),     lazy.ungrab_all_chords(), desc="Only built-in monitor"),
             Key([], "o", lazy.spawn("otherscreen"),      lazy.ungrab_all_chords(), desc="Only external monitor"),
         ],
-        mode="Multi Monitor [M]irror [L]eft [R]ight [S]ingle [O]ther"
+        mode="Multi Monitor [M]irror [L]eft [R]ight [A]bove [S]ingle [O]ther"
     ),
     # }}}}
     # --------------------------------- Layout ---------------------------- {{{{
