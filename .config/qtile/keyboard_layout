@@ -2,24 +2,19 @@
 
 case $1 in
 	latin)
-		setxkbmap -layout us -variant intl
+		fcitx5-remote -g latin
 		;;
 	us)
-		setxkbmap -layout us
+		fcitx5-remote -g us
 		;;
 	russian)
-		notify-send --urgency=critical "Russian does not currently work with Qtile"
-		exit 1
-		# setxkbmap -layout ru,us
+		fcitx5-remote -g russian
 		;;
 	greek)
-		notify-send --urgency=critical "Greek does not currently work with Qtile"
-		exit 1
-		# setxkbmap -layout gr,us
+		fcitx5-remote -g greek
 		;;
 	chinese)
-		notify-send --urgency=critical "Chinese is not implemented"
-		exit 1
+		fcitx5-remote -g chinese
 		;;
 	korean)
 		notify-send --urgency=critical "Korean is not implemented"
@@ -31,4 +26,6 @@ case $1 in
 		;;
 esac
 
+# give fcitx5 time to switch before reloading key remappings
+sleep 5
 [ -f ~/.Xmodmap ] && xmodmap ~/.Xmodmap

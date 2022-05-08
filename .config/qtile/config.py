@@ -17,6 +17,12 @@ from collections import deque
 from notify import notification
 from typing import Dict
 # }}}
+#  =========================== Environment Varialbes ======================= {{{
+os.environ["GLFW_IM_MODULE"] = "ibus" # for kitty terminal, uses same interface as fcitx5
+os.environ["GTK_IM_MODULE"] = "fcitx"
+os.environ["QT_IM_MODULE"] = "fcitx"
+os.environ["XMODIFIERS"] = "@im=fcitx"
+#  }}}
 # =============================== Qtile Settings =========================== {{{
 auto_fullscreen            = True
 focus_on_window_activation = "smart"
@@ -170,6 +176,9 @@ keys = [
         ],
         mode="Keyboard Layout [U]s [L]atin [C]hinese [R]ussian [G]reek [K]orean"
     ),
+    # Temporary emergency back to US layout until Qtile handles scancodes
+    # properly
+    Key([mod], "0", lazy.spawn(f"{config_dir}/keyboard_layout us"),  desc="Move focus to left"),
     # }}}}
     # -------------------------------- Backlight -------------------------- {{{{
     KeyChord([mod, "shift"], "b", [
