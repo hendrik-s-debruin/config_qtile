@@ -2,8 +2,7 @@
 
 # Chats
 telegram-desktop &
-signal-desktop &
-slack &
+teams &
 
 # Display
 ~/bin/wallpaper.sh &

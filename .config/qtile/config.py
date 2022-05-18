@@ -322,7 +322,7 @@ chats_layout    = layout.Tile(**theme)
 chat_matches = [
     Match(wm_class=["TelegramDesktop"]),
     Match(wm_class=["Signal"]),
-    Match(wm_class=["Slack"]),
+    Match(wm_class=["Microsoft Teams - Preview"]),
 ]
 
 media_matches = [
