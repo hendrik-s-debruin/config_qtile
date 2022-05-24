@@ -2,7 +2,6 @@
 
 # Chats
 telegram-desktop &
-teams &
 
 # Display
 ~/bin/wallpaper.sh &
