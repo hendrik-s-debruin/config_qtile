@@ -1,4 +1,5 @@
 #  ================================== Imports ============================== {{{
+
 from typing import List , Optional, Tuple # noqa: F401
 from enum import Enum
 
@@ -16,14 +17,20 @@ from libqtile.core.manager import Qtile
 from collections import deque
 from notify import notification
 from typing import Dict
+
 # }}}
+
 #  =========================== Environment Varialbes ======================= {{{
+
 os.environ["GLFW_IM_MODULE"] = "ibus" # for kitty terminal, uses same interface as fcitx5
 os.environ["GTK_IM_MODULE"] = "fcitx"
 os.environ["QT_IM_MODULE"] = "fcitx"
 os.environ["XMODIFIERS"] = "@im=fcitx"
+
 #  }}}
+
 # =============================== Qtile Settings =========================== {{{
+
 auto_fullscreen            = True
 focus_on_window_activation = "smart"
 reconfigure_screens        = True
@@ -34,16 +41,22 @@ follow_mouse_focus         = True
 bring_front_click          = True
 cursor_warp                = False
 wmname                     = "LG3D"
+
 # }}}
+
 # =================================== Globals ============================== {{{
+
 mod                  = "mod4"
 terminal             = "kitty"
 border_width         = 2
 margin               = 10
 config_dir           = os.path.expanduser("~/.config/qtile")
 notify_send_settings = {"timeout": 0, "app_name": "qtile"}
+
 # }}}
+
 # ================================ Key Bindings ============================ {{{
+
 @lazy.function
 def active_group_to_next_screen(qtile):
     current_group = qtile.current_group
@@ -51,6 +64,7 @@ def active_group_to_next_screen(qtile):
     current_group.cmd_toscreen()
 
 keys = [
+
     # ---------------------------- Window management ---------------------- {{{{
     # Focus
     Key([mod], "h", lazy.layout.left(),  desc="Move focus to left"),
@@ -92,8 +106,11 @@ keys = [
         ],
         mode="Resize [G]row [S]hrink [N]ormalize [M]aximize [hljk]"
     ),
+
     # }}}}
+
     # -------------------------------- Shutdown --------------------------- {{{{
+
     KeyChord([mod, "shift"], "e", [
             Key([], "s", lazy.spawn("shutdown now"), desc="Shutdown"),
             Key([], "r", lazy.spawn("reboot"),       desc="Reboot"),
@@ -101,8 +118,11 @@ keys = [
         ],
         mode="[S]utdown [R]eboot [K]ill Qtile"
     ),
+
     # }}}}
+
     # ------------------------------- Screenshots ------------------------- {{{{
+
     KeyChord([mod, "shift"], "p", [
             Key([], "a", lazy.spawn(config_dir + "/screenshot active"),  lazy.ungrab_all_chords(), desc="Take a screenshot of the active window"),
             Key([], "s", lazy.spawn(config_dir + "/screenshot section"), lazy.ungrab_all_chords(), desc="Take a screenshot of a section of the screen"),
@@ -110,8 +130,11 @@ keys = [
         ],
         mode="Screenshot [A]ctive [S]ection [F]ull"
     ),
+
     # }}}}
+
     # ----------------------------- Record Desktop ------------------------ {{{{
+
     KeyChord([mod, "shift"], "d", [
             # record
             Key([], "a", lazy.spawn("record_active_window"), lazy.ungrab_all_chords(), desc="Record active window"),
@@ -127,8 +150,11 @@ keys = [
         ],
         mode="Record Desktop [A]active [F]ull [P]ause [R]esume [C]ancel [S]top"
     ),
+
     # }}}}
+
     # ---------------------------- Volume Management ---------------------- {{{{
+
     KeyChord([mod, "shift"], "v", [
             Key([], "m",        lazy.spawn("amixer set Master mute"),   desc="Mute volume"),
             Key(["shift"], "m", lazy.spawn("amixer set Master unmute"), desc="Unmute volume"),
@@ -155,8 +181,11 @@ keys = [
     Key(["shift"], "XF86AudioRaiseVolume", lazy.spawn("amixer set Master 1%+"),    desc="Louder 1%"),
     Key(["shift"], "XF86AudioLowerVolume", lazy.spawn("amixer set Master 1%-"),    desc="Softer 1%"),
     Key([],        "XF86AudioMute",        lazy.spawn("amixer set Master toggle"), desc="Toggle mute"),
+
     # }}}}
+
     # ---------------------------- Launch Programmes ---------------------- {{{{
+
     Key([mod], "d",             lazy.spawn("rofi -monitor -1 -combi-modi drun,run -show combi"), desc="Launch a programme"),
     Key([mod], "t",             lazy.spawn("rofi -monitor -1 -show window"),                     desc="Jump to a window"),
     Key([mod,  "control"], "f", lazy.spawn("kitty ranger"),                          desc="Open ranger"),
@@ -164,8 +193,11 @@ keys = [
     Key([mod, "shift"], "m",    lazy.spawn("killall unclutter"),                     desc="Show the mouse"),
     Key([mod], "Return",        lazy.spawn(terminal),                                desc="Launch a terminal"),
     Key([mod, "shift"], "x",    lazy.spawn(config_dir + "/lock_qtile"),              desc="Lock the screen"),
+
     # }}}}
+
     # ----------------------------- Keyboard Layout ----------------------- {{{{
+
     KeyChord([mod], "q", [
             Key([], "l", lazy.spawn(f"{config_dir}/keyboard_layout latin"),   lazy.ungrab_all_chords(), desc="Switch to Latin keybord layout"),
             Key([], "c", lazy.spawn(f"{config_dir}/keyboard_layout chinese"), lazy.ungrab_all_chords(), desc="Switch to Chinese keybord layout"),
@@ -179,8 +211,11 @@ keys = [
     # Temporary emergency back to US layout until Qtile handles scancodes
     # properly
     Key([mod], "0", lazy.spawn(f"{config_dir}/keyboard_layout us"),  desc="Move focus to left"),
+
     # }}}}
+
     # -------------------------------- Backlight -------------------------- {{{{
+
     KeyChord([mod, "shift"], "b", [
             Key([], "d", lazy.spawn("backlight dec 3"),   desc="Dim backlight"),
             Key([], "l", lazy.spawn("backlight inc 3"),   desc="Increase backlight"),
@@ -200,8 +235,11 @@ keys = [
         ],
         mode="Backlight [D]arker [L]ighter [1234567890]"
     ),
+
     # }}}}
+
     # -------------------------- Multi Monitor Layout --------------------- {{{{
+
     KeyChord([mod, "shift"], "s", [
             Key([], "m", lazy.spawn("mirrorscreen"),     lazy.ungrab_all_chords(), desc="Mirror monitors"),
             Key([], "l", lazy.spawn("dualscreen_left"),  lazy.ungrab_all_chords(), desc="External monitor on left"),
@@ -212,20 +250,32 @@ keys = [
         ],
         mode="Multi Monitor [M]irror [L]eft [R]ight [A]bove [S]ingle [O]ther"
     ),
+
     # }}}}
+
     # --------------------------------- Layout ---------------------------- {{{{
+
     Key([mod], "Tab",   lazy.next_layout(), desc="Toggle between layouts"),
     Key([mod], "s",     lazy.layout.next(), lazy.layout.shuffle_right(), desc="Move window focus to other window"),
+
     # }}}}
+
     # ----------------------------- Qtile Commands ------------------------ {{{{
+
     Key([mod, "shift"], "r", lazy.reload_config(), desc="Reload the config"),
+
     # }}}}
+
     # ---------------------------------- Dunst ---------------------------- {{{{
+
     Key([mod], "n", lazy.spawn("dunstctl close"), desc="Close notification"),
+
     # }}}}
 ]
 # }}}
+
 # =========================== Auto Start Applications ====================== {{{
+
 @hook.subscribe.startup_once
 def autostart():
     autostart_script = os.path.expanduser(config_dir + "/autostart.sh")
@@ -235,9 +285,13 @@ def autostart():
 def autostart_always():
     autostart_script = os.path.expanduser(config_dir + "/autostart_always.sh")
     subprocess.run([autostart_script])
+
 # }}}
+
 # ==================================== Theme =============================== {{{
+
 # ----------------------------------- Colors ------------------------------ {{{{
+
 class ColorPallet:
     red           = "#cc241d" # urgent
     red2          = "#fb4934"
@@ -277,6 +331,7 @@ class ColorPallet:
     background    = "#32302f"
     text          = "#ebdbb2"
     inactive_text = "#d5c4a1"
+
 # }}}}
 
 theme = {
@@ -306,8 +361,11 @@ theme = {
     "fontsize":         11,
 
 }
+
 # }}}
+
 # =================================== Layouts ============================== {{{
+
 # Default layouts
 layouts = [
     layout.Columns(**theme),
@@ -316,20 +374,25 @@ layouts = [
 
 web_tree_layout = layout.TreeTab(sections=["General", "Code"], **theme)
 chats_layout    = layout.Tile(**theme)
+
 # }}}
+
 # ================================= Workspaces ============================= {{{
+
 # ---------------------------------- Defaults ----------------------------- {{{{
+
 chat_matches = [
     Match(wm_class=["TelegramDesktop"]),
     Match(wm_class=["Signal"]),
     Match(wm_class=["Microsoft Teams - Preview"]),
+    Match(wm_class=["teams.microsoft.com"]),
 ]
 
 media_matches = [
     Match(title=["Spotify"]) # TODO this should probably be done through a hook
 ]
-# }}}}
 
+# }}}}
 
 general_group = Group("")
 code_group = Group("")
@@ -369,8 +432,11 @@ for i in range(len(groups)):
         Key([mod, "shift"],   key, lazy.window.togroup(groups[i].name),                    desc="Switch to & move focused window to group {}".format(groups[i].name)),
         Key([mod, "control"], key, lazy.window.togroup(groups[i].name, switch_group=True), desc="Switch to & move focused window to group {}".format(groups[i].name)),
     ])
+
 # }}}
+
 # =================================== Widgets ============================== {{{
+
 widget_defaults = dict(
     font='Source Code Pro bold',
     fontsize=12,
@@ -425,8 +491,11 @@ bar1 = bar.Bar([widget.GroupBox(**groupbox_settings, fontsize=20), widget.Curren
 bar2 = bar.Bar([widget.GroupBox(**groupbox_settings, fontsize=20), widget.CurrentLayoutIcon(scale=0.7), prompt, widget.Spacer(), chord, text_boxes[1], updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=ColorPallet.background)
 
 screens = [ Screen(bottom=bar1), Screen(bottom=bar2), ]
+
 # }}}
+
 # ================================ Notifications =========================== {{{
+
 class Urgency(Enum):
     INFO  = 0
     ERROR = 1
@@ -474,7 +543,9 @@ def notify(msg: str, urgency: Urgency=Urgency.INFO, timeout = 2):
         update_notifications()
 
 # }}}
+
 # =============================== Custom Commands ========================== {{{
+
 class Callback(NamedTuple):
     callback: Any
     doc: str
@@ -623,8 +694,11 @@ keys.extend([
     Key([mod,], "x",      lazy.function(collapse_web_section), desc="Collapse a web branch"),
     Key([mod,   "shift"], "i",                                 run_custom_command, desc="Runs custom commands with prompted input")
 ])
+
 # }}}
+
 # ============================== Floating Windows ========================== {{{
+
 mouse = [
     Drag([mod],  "Button1", lazy.window.set_position_floating(), start=lazy.window.get_position()),
     Drag([mod],  "Button3", lazy.window.set_size_floating(),     start=lazy.window.get_size()),
@@ -640,4 +714,5 @@ floating_layout = layout.Floating(float_rules=[
     Match(title='branchdialog'),    # gitk
     Match(title='pinentry'),        # GPG key password entry
 ])
+
 # }}}
