@@ -2,6 +2,7 @@
 
 # Chats
 telegram-desktop &
+chromium --app=https://teams.microsoft.com &
 
 # Display
 ~/bin/wallpaper.sh &
