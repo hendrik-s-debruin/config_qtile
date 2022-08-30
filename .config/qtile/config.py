@@ -487,8 +487,8 @@ battery      = widget.Battery(format="{percent:2.0%} {char}",          charge_ch
 prompt       = widget.Prompt(cursor=False,                             background=ColorPallet.yellow,      foreground=ColorPallet.background, prompt='{prompt} ')
 text_boxes   = [widget.TextBox() for i in range(2)]
 
-bar1 = bar.Bar([widget.GroupBox(**groupbox_settings, fontsize=20), widget.CurrentLayoutIcon(scale=0.7), prompt, widget.Spacer(), chord, text_boxes[0], updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=ColorPallet.background)
-bar2 = bar.Bar([widget.GroupBox(**groupbox_settings, fontsize=20), widget.CurrentLayoutIcon(scale=0.7), prompt, widget.Spacer(), chord, text_boxes[1], updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=ColorPallet.background)
+bar1 = bar.Bar([widget.GroupBox(**groupbox_settings, fontsize=14), widget.CurrentLayoutIcon(scale=0.7), prompt, widget.Spacer(), chord, text_boxes[0], updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=ColorPallet.background)
+bar2 = bar.Bar([widget.GroupBox(**groupbox_settings, fontsize=14), widget.CurrentLayoutIcon(scale=0.7), prompt, widget.Spacer(), chord, text_boxes[1], updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=ColorPallet.background)
 
 screens = [ Screen(bottom=bar1), Screen(bottom=bar2), ]
 
