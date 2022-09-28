@@ -412,7 +412,7 @@ groups = [
 
 # If a group is bound to a screen the binding is reported here. If it is not
 # here, the group can be displayed on any screen
-group_to_screen_binds: Dict[str, int] = {media_group.name: 0, chat_group.name: 0}
+group_to_screen_binds: Dict[str, int] = {}
 
 @lazy.function
 def move_group_to_screen(qtile: Qtile, group: str):
