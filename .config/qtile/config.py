@@ -386,6 +386,7 @@ chat_matches = [
     Match(wm_class=["Signal"]),
     Match(wm_class=["Microsoft Teams - Preview"]),
     Match(wm_class=["teams.microsoft.com"]),
+    Match(wm_class=["thunderbird"]),
 ]
 
 media_matches = [
