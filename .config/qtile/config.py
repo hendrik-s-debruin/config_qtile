@@ -91,7 +91,6 @@ keys = [
 
     # Full screen and floating
     Key([mod],          "f", lazy.window.toggle_fullscreen(), desc="Toggle full screen"),
-    Key([mod, "shift"], "f", lazy.window.toggle_floating(),   desc="Toggle full screen"),
 
     # Resize
     KeyChord([mod], "r", [

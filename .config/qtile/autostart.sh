@@ -3,7 +3,6 @@
 # Chats
 telegram-desktop &
 chromium --app=https://teams.microsoft.com &
-thunderbird &
 
 # Display
 ~/bin/wallpaper.sh &
