@@ -15,7 +15,7 @@ import os
 from typing import NamedTuple, Any
 from libqtile.core.manager import Qtile
 from collections import deque
-from notify import notification
+# from notify import notification
 from typing import Dict
 
 # }}}
@@ -511,36 +511,38 @@ notifications = deque()
 notifications_running = False
 
 def update_notifications():
-    global notifications_running
-    if len(notifications) != 0:
-        notification = notifications.popleft()
-        for text_box in text_boxes:
-            text_box.cmd_update(notification.msg)
+    pass
+    # global notifications_running
+    # if len(notifications) != 0:
+    #     notification = notifications.popleft()
+    #     for text_box in text_boxes:
+    #         text_box.cmd_update(notification.msg)
 
-            # TODO the background colours don't display on all bars
-            if notification.urgency == Urgency.INFO:
-                text_box.background = ColorPallet.yellow
-                text_box.foreground = ColorPallet.background
-            elif notification.urgency == Urgency.ERROR:
-                text_box.background = ColorPallet.red
-                text_box.foreground = ColorPallet.text
-            elif notification.urgency == Urgency.WARN:
-                text_box.background = ColorPallet.orange
-                text_box.foreground = ColorPallet.text
+    #         # TODO the background colours don't display on all bars
+    #         if notification.urgency == Urgency.INFO:
+    #             text_box.background = ColorPallet.yellow
+    #             text_box.foreground = ColorPallet.background
+    #         elif notification.urgency == Urgency.ERROR:
+    #             text_box.background = ColorPallet.red
+    #             text_box.foreground = ColorPallet.text
+    #         elif notification.urgency == Urgency.WARN:
+    #             text_box.background = ColorPallet.orange
+    #             text_box.foreground = ColorPallet.text
 
-            text_box.timeout_add(notification.timeout, update_notifications)
-    else:
-        for text_box in text_boxes:
-            text_box.cmd_update("")
-        notifications_running = False
+    #         text_box.timeout_add(notification.timeout, update_notifications)
+    # else:
+    #     for text_box in text_boxes:
+    #         text_box.cmd_update("")
+    #     notifications_running = False
 
 def notify(msg: str, urgency: Urgency=Urgency.INFO, timeout = 2):
-    global notifications_running
-    notification = Notification(msg, urgency, timeout)
-    notifications.append(notification)
-    if not notifications_running:
-        notifications_running = True
-        update_notifications()
+    pass
+    # global notifications_running
+    # notification = Notification(msg, urgency, timeout)
+    # notifications.append(notification)
+    # if not notifications_running:
+    #     notifications_running = True
+    #     update_notifications()
 
 # }}}
 
