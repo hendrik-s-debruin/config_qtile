@@ -26,6 +26,4 @@ case $1 in
 		;;
 esac
 
-# give fcitx5 time to switch before reloading key remappings
-sleep 5
 [ -f ~/.Xmodmap ] && xmodmap ~/.Xmodmap
