@@ -389,7 +389,8 @@ chat_matches = [
 ]
 
 media_matches = [
-    Match(title=["Spotify"]) # TODO this should probably be done through a hook
+    Match(title=["Spotify"]), # TODO this should probably be done through a hook
+    Match(title=["waterbird"]),
 ]
 
 # }}}}
@@ -479,16 +480,19 @@ chord       = widget.Chord(background=ColorPallet.red)
 updates     = widget.CheckUpdates(custom_command="/sbin/checkupdates",     update_interval=60 * 5, foreground=ColorPallet.yellow, colour_have_updates=ColorPallet.text,   display_format="Updates: {updates}")
 updates_aur = widget.CheckUpdates(custom_command="/sbin/checkupdates-aur", update_interval=60 * 5, foreground=ColorPallet.yellow, colour_have_updates=ColorPallet.yellow, display_format="AUR: {updates}")
 
+mem_label    = widget.TextBox(fmt = "mem:")
 memory_graph = widget.MemoryGraph(border_color=ColorPallet.background, graph_color=ColorPallet.yellow,     fill_color=ColorPallet.yellow)
+cpu_label    = widget.TextBox(fmt = "cpu:")
 cpu_graph    = widget.CPUGraph(border_color=ColorPallet.background,    graph_color=ColorPallet.blue,       fill_color=ColorPallet.blue)
+net_label    = widget.TextBox(fmt = "net:")
 net_graph    = widget.NetGraph(border_color=ColorPallet.background,    graph_color=ColorPallet.green,      fill_color=ColorPallet.green)
 clock        = widget.Clock(format='%Y-%m-%d %a %I:%M %p')
 battery      = widget.Battery(format="{percent:2.0%} {char}",          charge_char="",                    discharge_char="",                low_foreground=ColorPallet.red, foreground=ColorPallet.green)
 prompt       = widget.Prompt(cursor=False,                             background=ColorPallet.yellow,      foreground=ColorPallet.background, prompt='{prompt} ')
 text_boxes   = [widget.TextBox() for i in range(2)]
 
-bar1 = bar.Bar([widget.GroupBox(**groupbox_settings, fontsize=14), widget.CurrentLayoutIcon(scale=0.7), prompt, widget.Spacer(), chord, text_boxes[0], updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=ColorPallet.background)
-bar2 = bar.Bar([widget.GroupBox(**groupbox_settings, fontsize=14), widget.CurrentLayoutIcon(scale=0.7), prompt, widget.Spacer(), chord, text_boxes[1], updates, updates_aur, memory_graph, cpu_graph, net_graph, clock, battery, ], 24, background=ColorPallet.background)
+bar1 = bar.Bar([widget.GroupBox(**groupbox_settings, fontsize=14), widget.CurrentLayoutIcon(scale=0.7), prompt, widget.Spacer(), chord, text_boxes[0], updates, updates_aur, widget.Sep(foreground = ColorPallet.bg4), mem_label, memory_graph, cpu_label, cpu_graph, net_label, net_graph, clock, battery, ], 24, background=ColorPallet.background)
+bar2 = bar.Bar([widget.GroupBox(**groupbox_settings, fontsize=14), widget.CurrentLayoutIcon(scale=0.7), prompt, widget.Spacer(), chord, text_boxes[1], updates, updates_aur, widget.Sep(foreground = ColorPallet.bg4), mem_label, memory_graph, cpu_label, cpu_graph, net_label, net_graph, clock, battery, ], 24, background=ColorPallet.background)
 
 screens = [ Screen(bottom=bar1), Screen(bottom=bar2), ]
 
